@@ -505,7 +505,7 @@ function getCustomerData($id)
 function generateOtp($user,$user_type,$otp_type)
 {
     $CI =& get_instance();
-    $otp = mt_rand(100000, 999999);
+    $otp = mt_rand(1000, 9999);
     $data = [
         'user'      => $user,
         'otp'       => $otp,
