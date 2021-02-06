@@ -106,7 +106,7 @@ class Authcustomer extends CI_Controller
 
 	public function register()
 	{
-		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('password')){
+		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('password') ){
 			$old = $this->db->get_where('customer',['email' => $this->input->post('email'),'df' => '']);
 			if($old->num_rows() == 0){
 				$data = [
@@ -124,6 +124,70 @@ class Authcustomer extends CI_Controller
 			}
 		}else{
 			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email` and `password` are Required']);	
+		}
+	}
+
+	public function verify_registerphone()
+	{
+		if($this->input->post('user') && $this->input->post('otp')){
+			$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'customer','used' => '0'])->row_array();
+			if($otp){
+				if($this->input->post('fname') && $this->input->post('lname')){
+					$data = [
+						'firstname'	=> $this->input->post('fname'),
+						'lastname'	=> $this->input->post('lname'),
+						'verified'	=> '1',
+						'cat'		=> _nowDateTime()
+					];
+					$this->db->where('id',$this->input->post('user'))->update('customer',$data);
+					retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
+				}else{
+					retJson(['_return' => false,'msg' => '`fname` and `lname` is Required']);		
+				}
+			}else{
+				retJson(['_return' => false,'msg' => 'OTP Not Valid']);		
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`user`(user_id) and `otp` is Required']);	
+		}	
+	}
+
+	public function registerviaphone()
+	{
+		if($this->input->post('phone')){
+			$old = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'df' => ''])->row_array();
+			if($old){
+				if($old['verified'] == "1"){
+					retJson(['_return' => false,'msg' => 'Phone No. Already Exists']);	
+				}else{
+					$data = [
+						'rtype'		=> 'phone',
+						'firstname'	=> "",
+						'lastname'	=> "",
+						'phone'		=> $this->input->post('phone'),
+						'verified'	=> '0',
+						'cat'		=> _nowDateTime()
+					];
+					$this->db->where('id',$old['id'])->update('customer',$data);
+					$otp = generateOtp($old['id'],'customer','register_phone');
+					retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $old['id'],'otp' => $otp]);
+				}
+			}else{
+				$data = [
+					'rtype'		=> 'phone',
+					'firstname'	=> "",
+					'lastname'	=> "",
+					'phone'		=> $this->input->post('phone'),
+					'verified'	=> '0',
+					'cat'		=> _nowDateTime()
+				];
+				$this->db->insert('customer',$data);
+				$user = $this->db->insert_id();
+				$otp = generateOtp($user,'customer','register_phone');
+				retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $user,'otp' => $otp]);
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`phone` is Required']);	
 		}
 	}
 }
