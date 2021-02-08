@@ -11,6 +11,7 @@ class Other extends CI_Controller
 
 	public function send_app_notification()
 	{
+		$this->rights->redirect([1]);
 		$data['_title']		= "Send Push Notifications To mobile devices";
 		$this->load->theme('other/push_notification',$data);	
 	}

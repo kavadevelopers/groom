@@ -106,6 +106,11 @@ function get_user(){
     return $ci->db->get_where('user',['id' => $ci->session->userdata('id')])->row_array();	
 }
 
+function get_user_byid($id){
+    $ci=& get_instance();
+    return $ci->db->get_where('user',['id' => $id])->row_array();  
+}
+
 function menu($seg,$array)
 {
     $CI =& get_instance();

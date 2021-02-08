@@ -140,7 +140,7 @@ class Authcustomer extends CI_Controller
 						'cat'		=> _nowDateTime()
 					];
 					$this->db->where('id',$this->input->post('user'))->update('customer',$data);
-					$this->db->where('id',$otp['id'])->update('customer',['used' => '1']);
+					$this->db->where('id',$otp['id'])->update('z_otp',['used' => '1']);
 					retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
 				}else{
 					retJson(['_return' => false,'msg' => '`fname` and `lname` is Required']);		

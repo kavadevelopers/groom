@@ -11,14 +11,16 @@
                         </a>
                     </li>
                 </ul>
-                <ul class="pcoded-item pcoded-left-item">
-                    <li class="<?= menu(2,["send_app_notification"])[0]; ?>">
-                        <a href="<?= base_url('other/send_app_notification') ?>">
-                            <span class="pcoded-micon"><i class="fa fa-send"></i></span>
-                            <span class="pcoded-mtext">Send App Notifications</span>
-                        </a>
-                    </li>
-                </ul>
+                <?php if($this->rights->check([1])){ ?>
+                    <ul class="pcoded-item pcoded-left-item">
+                        <li class="<?= menu(2,["send_app_notification"])[0]; ?>">
+                            <a href="<?= base_url('other/send_app_notification') ?>">
+                                <span class="pcoded-micon"><i class="fa fa-send"></i></span>
+                                <span class="pcoded-mtext">Send App Notifications</span>
+                            </a>
+                        </li>
+                    </ul>
+                <?php } ?>
                 <ul class="pcoded-item pcoded-left-item">
                     <li>
                         <a href="<?= base_url('login/logout') ?>">
@@ -37,15 +39,25 @@
                         </a>
                     </li>
                 </ul>
-                <div class="pcoded-navigatio-lavel">Others</div>
-                <ul class="pcoded-item pcoded-left-item">
-                    <li class="<?= menu(1,["setting"])[0]; ?>">
-                        <a href="<?= base_url('setting') ?>">
-                            <span class="pcoded-micon"><i class="fa fa-gear fa-spin"></i></span>
-                            <span class="pcoded-mtext">Setting</span>
-                        </a>
-                    </li>
-                </ul>
+                <?php if(get_user()['user_type'] == '0'){ ?>
+                    <div class="pcoded-navigatio-lavel">Others</div>
+                    <ul class="pcoded-item pcoded-left-item">
+                        <li class="<?= menu(1,["users"])[0]; ?>">
+                            <a href="<?= base_url('users') ?>">
+                                <span class="pcoded-micon"><i class="fa fa-user-md"></i></span>
+                                <span class="pcoded-mtext">Users</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="pcoded-item pcoded-left-item">
+                        <li class="<?= menu(1,["setting"])[0]; ?>">
+                            <a href="<?= base_url('setting') ?>">
+                                <span class="pcoded-micon"><i class="fa fa-gear fa-spin"></i></span>
+                                <span class="pcoded-mtext">Setting</span>
+                            </a>
+                        </li>
+                    </ul>
+                <?php } ?>
             </div>
         </nav>
         <div class="pcoded-content">

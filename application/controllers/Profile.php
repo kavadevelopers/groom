@@ -18,7 +18,7 @@ class Profile extends CI_Controller
 	{
 		$this->form_validation->set_error_delimiters('<div class="val-error">', '</div>');
 		$this->form_validation->set_rules('name', 'Name','trim|required');
-		$this->form_validation->set_rules('mobile', 'Mobile','trim|required|regex_match[/^[0-9]{10}$/]|min_length[10]|max_length[10]');
+		$this->form_validation->set_rules('mobile', 'Mobile','trim|required');
 		$this->form_validation->set_rules('email', 'Email','trim|required|valid_email|xss_clean');
 		$this->form_validation->set_rules('gender', 'Gender','trim|required');
 		$this->form_validation->set_rules('password', 'Password','trim|min_length[5]');
