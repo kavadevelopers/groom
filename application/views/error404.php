@@ -21,7 +21,7 @@
 	
 </head>
 
-<body>
+<body style="background: #00C691;">
 
 	<div id="notfound">
 		<div class="notfound">

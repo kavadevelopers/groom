@@ -50,7 +50,7 @@
     </div>
     <!-- Pre-loader end -->
 
-    <section class="login-block" style="background: #39ACE2;">
+    <section class="login-block" style="background: #00C691;">
         <!-- Container-fluid starts -->
         <div class="container">
             <div class="row">
