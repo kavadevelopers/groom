@@ -23,7 +23,7 @@ class General extends CI_Controller
 		}
 	}
 
-	public function getCategories()
+	public function getcategories()
 	{
 		$categories = $this->db->get_where('categories',['df' => '','block' => ''])->result_array();
 		foreach ($categories as $key => $value) {
