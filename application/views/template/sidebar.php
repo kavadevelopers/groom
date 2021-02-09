@@ -21,6 +21,7 @@
                         </li>
                     </ul>
                 <?php } ?>
+                
                 <ul class="pcoded-item pcoded-left-item">
                     <li>
                         <a href="<?= base_url('login/logout') ?>">
@@ -31,14 +32,24 @@
                 </ul>
 
                 <div class="pcoded-navigatio-lavel">App CMS</div>
-                <ul class="pcoded-item pcoded-left-item">
-                    <li class="<?= menu(1,["business_category"])[0]; ?>">
-                        <a href="<?= base_url('business_category') ?>">
-                            <span class="pcoded-micon"><i class="fa fa-briefcase"></i></span>
-                            <span class="pcoded-mtext">Business Categories</span>
-                        </a>
-                    </li>
-                </ul>
+                <?php if($this->rights->check([2])){ ?>
+                    <ul class="pcoded-item pcoded-left-item">
+                        <li class="pcoded-hasmenu <?= menu(1,["categories"])[2]; ?>">
+                            <a href="javascript:void(0)">
+                                <span class="pcoded-micon"><i class="fa fa-briefcase"></i></span>
+                                <span class="pcoded-mtext">Categories</span>
+                            </a>   
+                            <ul class="pcoded-submenu">
+                                <li class="<?= menu(2,["main","edit_category"])[0]; ?>">
+                                    <a href="<?= base_url('categories/main') ?>">
+                                        <span class="pcoded-micon"><i class="fa fa-list"></i></span>
+                                        <span class="pcoded-mtext">Categories</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                <?php } ?>
                 <?php if(get_user()['user_type'] == '0'){ ?>
                     <div class="pcoded-navigatio-lavel">Others</div>
                     <ul class="pcoded-item pcoded-left-item">

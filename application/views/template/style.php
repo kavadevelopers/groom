@@ -125,44 +125,4 @@
 		border-bottom: 1px solid #ccc;
 	}
 
-
-	#addchat-bubble .c-bubble-inner img.c-bubble-image{
-		height: 50px;
-	}
-
-	#addchat-bubble {
-	    position: fixed;
-	    z-index: 9999;
-	    right: 0%;
-	    bottom: 0%;
-	    width: 70px;
-	    height: 60px;
-	    margin: 0;
-	    padding: 0;
-	    cursor: pointer;
-	    border: 0;
-	}
-
-	#addchat-bubble .c-bubble-inner span.c-bubble-notification {
-	    position: absolute;
-	    z-index: 99;
-	    top: -0.8rem;
-	    left: 34px;
-	    display: none;
-	    overflow: hidden;
-	    width: 20px;
-	    height: 20px;
-	    text-align: center;
-	    color: #fff;
-	    border-radius: 50%;
-	    background: #e01e0f;
-	    box-shadow: 1px 1px 8px 2px rgba(0,0,0,.2);
-	}
-
-	#addchat-bubble .c-bubble-inner span.c-bubble-notification i {
-	    font-size: 10px;
-	    line-height: 1.7;
-	    animation: shake-horizontal 1.6s ease-in-out 1 forwards;
-	}
-
 </style>

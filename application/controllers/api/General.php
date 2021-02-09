@@ -6,6 +6,31 @@ class General extends CI_Controller
 		parent::__construct();
 	}
 
+	public function page()
+	{
+		if($this->input->post('page')){
+			if($this->input->post('page') == "terms"){
+				$page = $this->db->get_where('pages',['id' => '1'])->row_array();
+				retJson(['_return' => true,'page' => $page]);		
+			}else if($this->input->post('page') == "help"){
+				$page = $this->db->get_where('pages',['id' => '2'])->row_array();
+				retJson(['_return' => true,'page' => $page]);		
+			}else{
+				retJson(['_return' => false,'msg' => 'Please Enter Valid Page name']);		
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`page`(terms,help) is Required']);	
+		}
+	}
+
+	public function getCategories()
+	{
+		$categories = $this->db->get_where('categories',['df' => '','block' => ''])->result_array();
+		foreach ($categories as $key => $value) {
+			$categories[$key]['image']	= $this->general_model->getCategoryThumb($value['id']);
+		}
+		retJson(['_return' => true,'count' => count($categories),'list' => $categories]);		
+	}
 
 	public function verify_otp()
 	{
