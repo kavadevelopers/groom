@@ -49,7 +49,7 @@ class General_model extends CI_Model
 	    $this->email->set_newline("\r\n");
 	    $this->email->to($to);
 	    $this->email->from(get_setting()['mail_username']);
-	    $this->email->subject($sub);
+	    $this->email->subject("Forget Password OTP.");
 	    $this->email->message($msg);
 	    if($this->email->send()){
 	        //echo "ok";
