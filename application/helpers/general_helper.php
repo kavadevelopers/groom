@@ -193,13 +193,33 @@ function getCustomerData($id)
         if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
             $customer['profile_pic'] = base_url('uploads/customer/').$customer['profile_pic'];
         }else{
-            $customer['profile_pic'] = base_url('uploads/customer/profile.png');
+            $customer['profile_pic'] = base_url('uploads/common/profile.png');
         }
     }else{
         if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
             $customer['profile_pic'] = $customer['profile_pic'];
         }else{
-            $customer['profile_pic'] = base_url('uploads/customer/profile.png');
+            $customer['profile_pic'] = base_url('uploads/common/profile.png');
+        }
+    }
+    return $customer;
+}
+
+function getServiceData($id)
+{
+    $CI =& get_instance();
+    $customer = $CI->db->get_where('service_provider',['id' => $id])->row_array();
+    if($customer['rtype'] == 'email' || $customer['rtype'] == 'phone'){
+        if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
+            $customer['profile_pic'] = base_url('uploads/customer/').$customer['profile_pic'];
+        }else{
+            $customer['profile_pic'] = base_url('uploads/common/profile.png');
+        }
+    }else{
+        if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
+            $customer['profile_pic'] = $customer['profile_pic'];
+        }else{
+            $customer['profile_pic'] = base_url('uploads/common/profile.png');
         }
     }
     return $customer;
