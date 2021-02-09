@@ -205,7 +205,7 @@ function getCustomerData($id)
     return $customer;
 }
 
-function generateOtp($user,$user_type,$otp_type)
+function generateOtp($user,$user_type,$otp_type,$email = false)
 {
     $CI =& get_instance();
     $otp = mt_rand(1000, 9999);
