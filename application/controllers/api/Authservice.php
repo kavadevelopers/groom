@@ -6,6 +6,29 @@ class Authservice extends CI_Controller
 		parent::__construct();
 	}
 
+	public function registervia_googlefb()
+	{
+		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id')){
+			$data = [
+				'rtype'			=> $this->input->post('type'),
+				'social_id'		=> $this->input->post('social_id'),
+				'firstname'		=> $this->input->post('fname'),
+				'lastname'		=> $this->input->post('lname'),
+				'phone'			=> $this->input->post('phone'),
+				'business'		=> $this->input->post('business'),
+				'services'		=> $this->input->post('services'),
+				'desc'			=> $this->input->post('desc'),
+				'verified'		=> '1',
+				'cat'			=> _nowDateTime()
+			];
+			$this->db->insert('service_provider',$data);
+			$user = $this->db->insert_id();
+			retJson(['_return' => true,'msg' => 'Sign Up Successful.','data' => getServiceData($user)]);
+		}else{
+			retJson(['_return' => false,'msg' => '`type`(facebook,google),`social_id`,`fname`,`lname`,`business`,`phone`,`services`,`desc` and `password` are Required']);	
+		}
+	}
+
 	public function login()
 	{
 		if($this->input->post('type') && $this->input->post('firebase_token') && $this->input->post('device') && $this->input->post('device_id')){
@@ -44,11 +67,30 @@ class Authservice extends CI_Controller
 				}else{
 					retJson(['_return' => false,'msg' => '`phone` id Required']);					
 				}
+			}else if($this->input->post('type') == 'facebook' || $this->input->post('type') == 'google'){
+				if($this->input->post('social_id')){
+					$old = $this->db->get_where('customer',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
+					if($old){
+						$firebase = [
+							'token'		=> $this->input->post('firebase_token'),
+							'device'	=> $this->input->post('device'),
+							'device_id'	=> $this->input->post('device_id'),
+							'user'		=> $user['id'],
+							'cat'		=> _nowDateTime()
+						];
+						$this->db->insert('service_firebase',$firebase);
+						retJson(['_return' => true,'msg' => 'Login Success','data' => getServiceData($old['id'])]);
+					}else{
+						retJson(['_return' => false,'msg' => 'Not Registered']);				
+					}
+				}else{
+					retJson(['_return' => false,'msg' => '`social_id` is Required']);			
+				}
 			}else{
 				retJson(['_return' => false,'msg' => 'Not Allowed.']);		
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`type` (email,phone),`device`,`device_id` and `firebase_token` are Required']);	
+			retJson(['_return' => false,'msg' => '`type` (email,phone,facebook,google),`device`,`device_id` and `firebase_token` are Required']);	
 		}
 	}
 
