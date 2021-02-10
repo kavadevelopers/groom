@@ -8,7 +8,7 @@ class Authservice extends CI_Controller
 
 	public function registervia_googlefb()
 	{
-		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id')){
+		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id')){
 			$data = [
 				'rtype'			=> $this->input->post('type'),
 				'social_id'		=> $this->input->post('social_id'),
@@ -25,7 +25,7 @@ class Authservice extends CI_Controller
 			$user = $this->db->insert_id();
 			retJson(['_return' => true,'msg' => 'Sign Up Successful.','data' => getServiceData($user)]);
 		}else{
-			retJson(['_return' => false,'msg' => '`type`(facebook,google),`social_id`,`fname`,`lname`,`business`,`phone`,`services`,`desc` and `password` are Required']);	
+			retJson(['_return' => false,'msg' => '`type`(facebook,google),`social_id`,`fname`,`lname`,`business`,`phone`,`services` and `desc` are Required']);	
 		}
 	}
 
@@ -149,7 +149,7 @@ class Authservice extends CI_Controller
 		if($this->input->post('user') && $this->input->post('otp')){
 			$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'service','used' => '0'])->row_array();
 			if($otp){
-				if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc')){
+				if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc')){
 					$data = [
 						'firstname'		=> $this->input->post('fname'),
 						'lastname'		=> $this->input->post('lname'),
@@ -164,7 +164,7 @@ class Authservice extends CI_Controller
 					$this->db->where('user',$this->input->post('user'))->where('otptype','register_phone')->where('usertype','service')->update('z_otp',['used' => '1']);
 					retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
 				}else{
-					retJson(['_return' => false,'msg' => '`fname`,`lname`,`business`,`phone`,`services`,`desc` and `password` are Required']);	
+					retJson(['_return' => false,'msg' => '`fname`,`lname`,`business`,`phone`,`services` and `desc` are Required']);	
 				}
 			}else{
 				retJson(['_return' => false,'msg' => 'OTP Not Valid']);		
