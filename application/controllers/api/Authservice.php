@@ -75,7 +75,7 @@ class Authservice extends CI_Controller
 							'token'		=> $this->input->post('firebase_token'),
 							'device'	=> $this->input->post('device'),
 							'device_id'	=> $this->input->post('device_id'),
-							'user'		=> $user['id'],
+							'user'		=> $old['id'],
 							'cat'		=> _nowDateTime()
 						];
 						$this->db->insert('service_firebase',$firebase);
