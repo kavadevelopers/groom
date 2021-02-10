@@ -17,7 +17,7 @@ class Authservice extends CI_Controller
 				'phone'			=> $this->input->post('phone'),
 				'business'		=> $this->input->post('business'),
 				'services'		=> $this->input->post('services'),
-				'desc'			=> $this->input->post('desc'),
+				'descr'			=> $this->input->post('desc'),
 				'verified'		=> '1',
 				'cat'			=> _nowDateTime()
 			];
@@ -156,7 +156,7 @@ class Authservice extends CI_Controller
 						'phone'			=> $this->input->post('phone'),
 						'business'		=> $this->input->post('business'),
 						'services'		=> $this->input->post('services'),
-						'desc'			=> $this->input->post('desc'),
+						'descr'			=> $this->input->post('desc'),
 						'verified'		=> '1',
 						'cat'			=> _nowDateTime()
 					];
@@ -228,7 +228,7 @@ class Authservice extends CI_Controller
 						'phone'			=> $this->input->post('phone'),
 						'business'		=> $this->input->post('business'),
 						'services'		=> $this->input->post('services'),
-						'desc'			=> $this->input->post('desc'),
+						'descr'			=> $this->input->post('desc'),
 						'password'		=> md5($this->input->post('password')),
 						'verified'		=> '1',
 						'cat'			=> _nowDateTime()
