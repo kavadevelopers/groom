@@ -60,7 +60,7 @@ class Authservice extends CI_Controller
 					$user = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'rtype' => 'phone'])->row_array();
 					if($user){
 						$otp = generateOtp($user['id'],'service','login');
-						retJson(['_return' => false,'msg' => 'Please Verify OTP.','otp' => $otp,'user' => $user['id']]);	
+						retJson(['_return' => true,'msg' => 'Please Verify OTP.','otp' => $otp,'user' => $user['id']]);	
 					}else{
 						retJson(['_return' => false,'msg' => 'Phone No. Not Registered']);	
 					}
