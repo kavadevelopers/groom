@@ -37,7 +37,6 @@ class General extends CI_Controller
 		if($this->input->post('user') && $this->input->post('usertype') && $this->input->post('otp') && $this->input->post('otptype')){
 			if($this->input->post('otptype') == 'login'){
 				if($this->input->post('firebase_token') && $this->input->post('device') && $this->input->post('device_id')){
-					
 					$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => $this->input->post('otptype'),'usertype' => $this->input->post('usertype'),'used' => '0'])->row_array();
 					if($otp){
 						$this->db->where('user',$this->input->post('user'))->where('otptype','login')->where('usertype','service')->update('z_otp',['used' => '1']);
@@ -65,7 +64,6 @@ class General extends CI_Controller
 					}else{
 						retJson(['_return' => false,'msg' => 'OTP Not Valid']);		
 					}
-					
 				}else{
 					retJson(['_return' => false,'msg' => '`device`,`device_id` and `firebase_token` are Required']);	
 				}

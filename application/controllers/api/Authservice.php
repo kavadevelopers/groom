@@ -9,21 +9,26 @@ class Authservice extends CI_Controller
 	public function registervia_googlefb()
 	{
 		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id')){
-			$data = [
-				'rtype'			=> $this->input->post('type'),
-				'social_id'		=> $this->input->post('social_id'),
-				'firstname'		=> $this->input->post('fname'),
-				'lastname'		=> $this->input->post('lname'),
-				'phone'			=> $this->input->post('phone'),
-				'business'		=> $this->input->post('business'),
-				'services'		=> $this->input->post('services'),
-				'descr'			=> $this->input->post('desc'),
-				'verified'		=> '1',
-				'cat'			=> _nowDateTime()
-			];
-			$this->db->insert('service_provider',$data);
-			$user = $this->db->insert_id();
-			retJson(['_return' => true,'msg' => 'Sign Up Successful.','data' => getServiceData($user)]);
+			$old = $this->db->get_where('customer',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
+			if(!$old){
+				$data = [
+					'rtype'			=> $this->input->post('type'),
+					'social_id'		=> $this->input->post('social_id'),
+					'firstname'		=> $this->input->post('fname'),
+					'lastname'		=> $this->input->post('lname'),
+					'phone'			=> $this->input->post('phone'),
+					'business'		=> $this->input->post('business'),
+					'services'		=> $this->input->post('services'),
+					'descr'			=> $this->input->post('desc'),
+					'verified'		=> '1',
+					'cat'			=> _nowDateTime()
+				];
+				$this->db->insert('service_provider',$data);
+				$user = $this->db->insert_id();
+				retJson(['_return' => true,'msg' => 'Sign Up Successful.','data' => getServiceData($user)]);
+			}else{
+				retJson(['_return' => false,'msg' => 'Already Registered']);	
+			}
 		}else{
 			retJson(['_return' => false,'msg' => '`type`(facebook,google),`social_id`,`fname`,`lname`,`business`,`phone`,`services` and `desc` are Required']);	
 		}
