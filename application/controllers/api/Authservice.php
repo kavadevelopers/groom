@@ -9,7 +9,7 @@ class Authservice extends CI_Controller
 	public function registervia_googlefb()
 	{
 		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id')){
-			$old = $this->db->get_where('customer',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
+			$old = $this->db->get_where('service_provider',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
 			if(!$old){
 				$data = [
 					'rtype'			=> $this->input->post('type'),
@@ -74,7 +74,7 @@ class Authservice extends CI_Controller
 				}
 			}else if($this->input->post('type') == 'facebook' || $this->input->post('type') == 'google'){
 				if($this->input->post('social_id')){
-					$old = $this->db->get_where('customer',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
+					$old = $this->db->get_where('service_provider',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
 					if($old){
 						$firebase = [
 							'token'		=> $this->input->post('firebase_token'),
