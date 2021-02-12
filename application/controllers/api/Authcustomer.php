@@ -39,8 +39,8 @@ class Authcustomer extends CI_Controller
 					retJson(['_return' => false,'msg' => '`email` is Required']);		
 				}
 			}else{
-				if($this->input->post('phone')){
-					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'rtype' => 'phone','df' => ''])->row_array();
+				if($this->input->post('phone') && $this->input->post('ccode')){
+					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'rtype' => 'phone','df' => ''])->row_array();
 					if($user){
 						$otp = @generateOtp($user['id'],'customer','forget_password');
 						retJson(['_return' => true,'msg' => 'Reset password OTP sent to your phone no.','otp' => $otp,'user' => $user['id']]);
@@ -48,7 +48,7 @@ class Authcustomer extends CI_Controller
 						retJson(['_return' => false,'msg' => 'Cant find user with this phone no.']);	
 					}
 				}else{
-					retJson(['_return' => false,'msg' => '`phone` is Required']);		
+					retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);		
 				}
 			}
 		}else{	
@@ -158,7 +158,7 @@ class Authcustomer extends CI_Controller
 	{
 		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('ccode')){
 			$old = $this->db->get_where('customer',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
-			$oldp = $this->db->get_where('customer',['rtype' => 'email','phone' => $this->input->post('phone'),'df' => '']);
+			$oldp = $this->db->get_where('customer',['rtype' => 'email','phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '']);
 			if($old->num_rows() == 0 && $oldp->num_rows() == 0){
 				$data = [
 					'rtype'		=> 'email',

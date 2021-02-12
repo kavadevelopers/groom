@@ -8,7 +8,7 @@ class Authservice extends CI_Controller
 
 	public function registervia_googlefb()
 	{
-		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id')){
+		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id') && $this->input->post('ccode')){
 			$old = $this->db->get_where('service_provider',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
 			if(!$old){
 				$data = [
@@ -16,6 +16,7 @@ class Authservice extends CI_Controller
 					'social_id'		=> $this->input->post('social_id'),
 					'firstname'		=> $this->input->post('fname'),
 					'lastname'		=> $this->input->post('lname'),
+					'ccode'			=> $this->input->post('ccode'),
 					'phone'			=> $this->input->post('phone'),
 					'business'		=> $this->input->post('business'),
 					'services'		=> $this->input->post('services'),
@@ -31,7 +32,7 @@ class Authservice extends CI_Controller
 				retJson(['_return' => false,'msg' => 'Already Registered']);	
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`type`(facebook,google),`social_id`,`fname`,`lname`,`business`,`phone`,`services` and `desc` are Required']);	
+			retJson(['_return' => false,'msg' => '`type`(facebook,google),`social_id`,`fname`,`lname`,`business`,`phone`,`ccode`,`services` and `desc` are Required']);	
 		}
 	}
 
@@ -66,8 +67,8 @@ class Authservice extends CI_Controller
 					retJson(['_return' => false,'msg' => '`email` and `password` are Required']);			
 				}
 			}else if($this->input->post('type') == 'phone'){
-				if($this->input->post('phone')){
-					$user = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'rtype' => 'phone','verified' => '1'])->row_array();
+				if($this->input->post('phone') && $this->input->post('ccode')){
+					$user = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'rtype' => 'phone','verified' => '1'])->row_array();
 					if($user){
 						if($user['approved'] == '1'){
 							$otp = generateOtp($user['id'],'service','login');
@@ -145,8 +146,8 @@ class Authservice extends CI_Controller
 					retJson(['_return' => false,'msg' => '`email` is Required']);		
 				}
 			}else{
-				if($this->input->post('phone')){
-					$user = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'rtype' => 'phone','df' => ''])->row_array();
+				if($this->input->post('phone') && $this->input->post('ccode')){
+					$user = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'rtype' => 'phone','df' => ''])->row_array();
 					if($user){
 						$otp = @generateOtp($user['id'],'service','forget_password');
 						retJson(['_return' => true,'msg' => 'Reset password OTP sent to your phone no.','otp' => $otp,'user' => $user['id']]);
@@ -154,7 +155,7 @@ class Authservice extends CI_Controller
 						retJson(['_return' => false,'msg' => 'Cant find user with this phone no.']);	
 					}
 				}else{
-					retJson(['_return' => false,'msg' => '`phone` is Required']);		
+					retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);		
 				}
 			}
 		}else{	
@@ -171,7 +172,6 @@ class Authservice extends CI_Controller
 					$data = [
 						'firstname'		=> $this->input->post('fname'),
 						'lastname'		=> $this->input->post('lname'),
-						'phone'			=> $this->input->post('phone'),
 						'business'		=> $this->input->post('business'),
 						'services'		=> $this->input->post('services'),
 						'descr'			=> $this->input->post('desc'),
@@ -194,8 +194,8 @@ class Authservice extends CI_Controller
 
 	public function registerviaphone()
 	{
-		if($this->input->post('phone')){
-			$old = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'df' => '','rtype' => 'phone'])->row_array();
+		if($this->input->post('phone') && $this->input->post('ccode')){
+			$old = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '','rtype' => 'phone'])->row_array();
 			if($old){
 				if($old['verified'] == "1"){
 					retJson(['_return' => false,'msg' => 'Phone No. Already Exists']);	
@@ -204,6 +204,7 @@ class Authservice extends CI_Controller
 						'rtype'		=> 'phone',
 						'firstname'	=> "",
 						'lastname'	=> "",
+						'ccode'		=> $this->input->post('ccode'),
 						'phone'		=> $this->input->post('phone'),
 						'verified'	=> '0',
 						'cat'		=> _nowDateTime()
@@ -217,6 +218,7 @@ class Authservice extends CI_Controller
 					'rtype'		=> 'phone',
 					'firstname'	=> "",
 					'lastname'	=> "",
+					'ccode'		=> $this->input->post('ccode'),
 					'phone'		=> $this->input->post('phone'),
 					'verified'	=> '0',
 					'cat'		=> _nowDateTime()
@@ -227,15 +229,15 @@ class Authservice extends CI_Controller
 				retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $user,'otp' => $otp]);
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`phone` is Required']);	
+			retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);	
 		}
 	}
 
 	public function register()
 	{
-		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('business') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc')){
+		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('business') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('ccode')){
 			$old = $this->db->get_where('service_provider',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
-			$oldp = $this->db->get_where('service_provider',['rtype' => 'email','phone' => $this->input->post('phone'),'df' => '']);
+			$oldp = $this->db->get_where('service_provider',['rtype' => 'email','phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '']);
 			if($old->num_rows() == 0){
 				if($oldp->num_rows() == 0){
 					$data = [
@@ -243,6 +245,7 @@ class Authservice extends CI_Controller
 						'firstname'		=> $this->input->post('fname'),
 						'lastname'		=> $this->input->post('lname'),
 						'email'			=> $this->input->post('email'),
+						'ccode'			=> $this->input->post('ccode'),
 						'phone'			=> $this->input->post('phone'),
 						'business'		=> $this->input->post('business'),
 						'services'		=> $this->input->post('services'),
@@ -260,7 +263,7 @@ class Authservice extends CI_Controller
 				retJson(['_return' => false,'msg' => 'Email Already Exists.']);
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`business`,`phone`,`services`,`desc` and `password` are Required']);	
+			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`business`,`phone`,`ccode`,`services`,`desc` and `password` are Required']);	
 		}			
 	}
 }
