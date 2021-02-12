@@ -31,6 +31,38 @@
                     </li>
                 </ul>
 
+                <?php if($this->rights->check([3])){ ?>
+                <div class="pcoded-navigatio-lavel">App Users</div>
+                    <ul class="pcoded-item pcoded-left-item">
+                        <li class="pcoded-hasmenu <?= menu(1,["service_provider"])[2]; ?>">
+                            <a href="javascript:void(0)">
+                                <span class="pcoded-micon"><i class="fa fa-user-secret"></i></span>
+                                <span class="pcoded-mtext">Service Providers</span>
+                            </a>   
+                            <ul class="pcoded-submenu">
+                                <li class="<?= menu(2,["new"])[0]; ?>">
+                                    <a href="<?= base_url('service_provider/new') ?>">
+                                        <span class="pcoded-micon"><i class="fa fa-list"></i></span>
+                                        <span class="pcoded-mtext">New</span>
+                                    </a>
+                                </li>
+                                <li class="<?= menu(2,["approved"])[0]; ?>">
+                                    <a href="<?= base_url('service_provider/approved') ?>">
+                                        <span class="pcoded-micon"><i class="fa fa-list"></i></span>
+                                        <span class="pcoded-mtext">Approved</span>
+                                    </a>
+                                </li>
+                                <li class="<?= menu(2,["rejected"])[0]; ?>">
+                                    <a href="<?= base_url('service_provider/rejected') ?>">
+                                        <span class="pcoded-micon"><i class="fa fa-list"></i></span>
+                                        <span class="pcoded-mtext">Rejected</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                <?php } ?>
+
                 <div class="pcoded-navigatio-lavel">App CMS</div>
                 <?php if($this->rights->check([2])){ ?>
                     <ul class="pcoded-item pcoded-left-item">

@@ -21,6 +21,7 @@ class Authservice extends CI_Controller
 					'services'		=> $this->input->post('services'),
 					'descr'			=> $this->input->post('desc'),
 					'verified'		=> '1',
+					'approved'		=> '1',
 					'cat'			=> _nowDateTime()
 				];
 				$this->db->insert('service_provider',$data);
@@ -42,15 +43,19 @@ class Authservice extends CI_Controller
 					$user = $this->db->get_where('service_provider',['email' => $this->input->post('email'),'rtype' => 'email'])->row_array();
 					if($user){
 						if($user['password'] == md5($this->input->post('password'))){
-							$firebase = [
-								'token'		=> $this->input->post('firebase_token'),
-								'device'	=> $this->input->post('device'),
-								'device_id'	=> $this->input->post('device_id'),
-								'user'		=> $user['id'],
-								'cat'		=> _nowDateTime()
-							];
-							$this->db->insert('service_firebase',$firebase);
-							retJson(['_return' => true,'msg' => 'Login Success','data' => getServiceData($user['id'])]);		
+							if($user['approved'] == '1'){
+								$firebase = [
+									'token'		=> $this->input->post('firebase_token'),
+									'device'	=> $this->input->post('device'),
+									'device_id'	=> $this->input->post('device_id'),
+									'user'		=> $user['id'],
+									'cat'		=> _nowDateTime()
+								];
+								$this->db->insert('service_firebase',$firebase);
+								retJson(['_return' => true,'msg' => 'Login Success','data' => getServiceData($user['id'])]);
+							}else{
+								retJson(['_return' => false,'msg' => 'Account not approved yet. please contact administrator']);			
+							}		
 						}else{
 							retJson(['_return' => false,'msg' => 'Email and Password not match']);		
 						}
@@ -64,8 +69,12 @@ class Authservice extends CI_Controller
 				if($this->input->post('phone')){
 					$user = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'rtype' => 'phone','verified' => '1'])->row_array();
 					if($user){
-						$otp = generateOtp($user['id'],'service','login');
-						retJson(['_return' => true,'msg' => 'Please Verify OTP.','otp' => $otp,'user' => $user['id']]);	
+						if($user['approved'] == '1'){
+							$otp = generateOtp($user['id'],'service','login');
+							retJson(['_return' => true,'msg' => 'Please Verify OTP.','otp' => $otp,'user' => $user['id']]);	
+						}else{
+							retJson(['_return' => false,'msg' => 'Account not approved yet. please contact administrator']);			
+						}
 					}else{
 						retJson(['_return' => false,'msg' => 'Phone No. Not Registered']);	
 					}
@@ -76,15 +85,19 @@ class Authservice extends CI_Controller
 				if($this->input->post('social_id')){
 					$old = $this->db->get_where('service_provider',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
 					if($old){
-						$firebase = [
-							'token'		=> $this->input->post('firebase_token'),
-							'device'	=> $this->input->post('device'),
-							'device_id'	=> $this->input->post('device_id'),
-							'user'		=> $old['id'],
-							'cat'		=> _nowDateTime()
-						];
-						$this->db->insert('service_firebase',$firebase);
-						retJson(['_return' => true,'msg' => 'Login Success','data' => getServiceData($old['id'])]);
+						if($old['approved'] == '1'){
+							$firebase = [
+								'token'		=> $this->input->post('firebase_token'),
+								'device'	=> $this->input->post('device'),
+								'device_id'	=> $this->input->post('device_id'),
+								'user'		=> $old['id'],
+								'cat'		=> _nowDateTime()
+							];
+							$this->db->insert('service_firebase',$firebase);
+							retJson(['_return' => true,'msg' => 'Login Success','data' => getServiceData($old['id'])]);
+						}else{
+							retJson(['_return' => false,'msg' => 'Account not approved yet. please contact administrator']);			
+						}
 					}else{
 						retJson(['_return' => false,'msg' => 'Not Registered']);				
 					}

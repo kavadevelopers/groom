@@ -6,6 +6,9 @@ class Setting extends CI_Controller
 	{
 		parent::__construct();
 		$this->auth->check_session();
+		if($this->session->userdata('id') != '1'){
+			redirect(base_url('error404'));
+		}
 	}
 
 	public function index()

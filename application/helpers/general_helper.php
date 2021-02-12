@@ -185,6 +185,12 @@ function sendEmail($to,$sub,$msg)
 
 // Groom
 
+function getCategory($id)
+{
+    $CI =& get_instance();   
+    return $CI->db->get_where('categories',['id' => $id])->row_array();
+}
+
 function getCustomerData($id)
 {
     $CI =& get_instance();
