@@ -39,7 +39,7 @@
                                     <td><?= ucfirst($value['rtype']) ?></td>
                                     <td><?= $value['firstname'].' '.$value['lastname'] ?></td>
                                     <td><?= $value['business'] ?></td>
-                                    <td><?= $value['phone'] ?></td>
+                                    <td><?= $value['ccode'] ?>-<?= $value['phone'] ?></td>
                                     <td><?= $value['email'] ?></td>
                                     <td>
                                        <?php $servces = ""; foreach (explode(',', $value['services']) as $vl) {
