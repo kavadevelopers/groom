@@ -34,6 +34,7 @@ class Authcustomer extends CI_Controller
 			    		];
 			    		$this->db->insert('customer_verified',$data);
 			    	}
+			    	retJson(['_return' => true,'msg' => 'Data uploaded']);		
 		    	}else{
 		    		retJson(['_return' => false,'msg' => 'File Upload Error']);		
 		    	}
