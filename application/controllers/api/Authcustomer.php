@@ -93,7 +93,7 @@ class Authcustomer extends CI_Controller
 					retJson(['_return' => false,'msg' => '`email` and `password` are Required']);			
 				}
 			}else if($this->input->post('type') == 'phone'){
-				if($this->input->post('phone')){
+				if($this->input->post('phone') && $this->input->post('ccode')){
 					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'ccode'		=> $this->input->post('ccode'),'rtype' => 'phone','verified' => '1'])->row_array();
 					if($user){
 						$otp = generateOtp($user['id'],'customer','login');
@@ -102,7 +102,7 @@ class Authcustomer extends CI_Controller
 						retJson(['_return' => false,'msg' => 'Phone No. Not Registered']);	
 					}
 				}else{
-					retJson(['_return' => false,'msg' => '`phone` id Required']);					
+					retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);					
 				}
 			}else if($this->input->post('type') == 'facebook' || $this->input->post('type') == 'google'){
 				if($this->input->post('social_id') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('email')){
@@ -244,7 +244,7 @@ class Authcustomer extends CI_Controller
 				retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $user,'otp' => $otp]);
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`phone` is Required']);	
+			retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);	
 		}
 	}
 }
