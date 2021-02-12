@@ -6,6 +6,53 @@ class Authservice extends CI_Controller
 		parent::__construct();
 	}
 
+	public function address()
+	{
+		if($this->input->post('lat') && $this->input->post('lon') && $this->input->post('user')){	
+			$old = $this->db->get_where('service_address',['user' => $this->input->post('user')])->row_array();
+			if($old){
+				$city = "";$state = "";$country = "";$area = "";$street = "";
+				if($this->input->post('city')){ $city = $this->input->post('city'); }else{ $city = ""; }
+				if($this->input->post('state')){ $state = $this->input->post('state'); }else{ $state = ""; }
+				if($this->input->post('country')){ $country = $this->input->post('country'); }else{ $country = ""; }
+				if($this->input->post('area')){ $area = $this->input->post('area'); }else{ $area = ""; }
+				if($this->input->post('street')){ $street = $this->input->post('street'); }else{ $street = ""; }
+
+				$data = [
+					'lat'		=> $this->input->post('lat'),
+					'lon'		=> $this->input->post('lon'),
+					'city'		=> $city,
+					'state'		=> $state
+					'country'	=> $country,
+					'area'		=> $area,
+					'street'	=> $street,
+					'user'		=> $this->input->post('user')
+				];
+				$this->db->where('user',$this->input->post('user'))->update('service_address',$data);
+			}else{
+				$city = "";$state = "";$country = "";$area = "";$street = "";
+				if($this->input->post('city')){ $city = $this->input->post('city'); }else{ $city = ""; }
+				if($this->input->post('state')){ $state = $this->input->post('state'); }else{ $state = ""; }
+				if($this->input->post('country')){ $country = $this->input->post('country'); }else{ $country = ""; }
+				if($this->input->post('area')){ $area = $this->input->post('area'); }else{ $area = ""; }
+				if($this->input->post('street')){ $street = $this->input->post('street'); }else{ $street = ""; }
+				$data = [
+					'lat'		=> $this->input->post('lat'),
+					'lon'		=> $this->input->post('lon'),
+					'city'		=> $city,
+					'state'		=> $state
+					'country'	=> $country,
+					'area'		=> $area,
+					'street'	=> $street,
+					'user'		=> $this->input->post('user')
+				];
+				$this->db->insert('service_address',$data);
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`lat`,`lon` and `user`(userid) are Required,Optionals are(city,state,country,area,street)']);
+		}
+	}
+
 	public function registervia_googlefb()
 	{
 		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id') && $this->input->post('ccode')){

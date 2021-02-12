@@ -6,6 +6,53 @@ class Authcustomer extends CI_Controller
 		parent::__construct();
 	}
 
+	public function address()
+	{
+		if($this->input->post('lat') && $this->input->post('lon') && $this->input->post('user')){	
+			$old = $this->db->get_where('customer_address',['user' => $this->input->post('user')])->row_array();
+			if($old){
+				$city = "";$state = "";$country = "";$area = "";$street = "";
+				if($this->input->post('city')){ $city = $this->input->post('city'); }else{ $city = ""; }
+				if($this->input->post('state')){ $state = $this->input->post('state'); }else{ $state = ""; }
+				if($this->input->post('country')){ $country = $this->input->post('country'); }else{ $country = ""; }
+				if($this->input->post('area')){ $area = $this->input->post('area'); }else{ $area = ""; }
+				if($this->input->post('street')){ $street = $this->input->post('street'); }else{ $street = ""; }
+
+				$data = [
+					'lat'		=> $this->input->post('lat'),
+					'lon'		=> $this->input->post('lon'),
+					'city'		=> $city,
+					'state'		=> $state
+					'country'	=> $country,
+					'area'		=> $area,
+					'street'	=> $street,
+					'user'		=> $this->input->post('user')
+				];
+				$this->db->where('user',$this->input->post('user'))->update('customer_address',$data);
+			}else{
+				$city = "";$state = "";$country = "";$area = "";$street = "";
+				if($this->input->post('city')){ $city = $this->input->post('city'); }else{ $city = ""; }
+				if($this->input->post('state')){ $state = $this->input->post('state'); }else{ $state = ""; }
+				if($this->input->post('country')){ $country = $this->input->post('country'); }else{ $country = ""; }
+				if($this->input->post('area')){ $area = $this->input->post('area'); }else{ $area = ""; }
+				if($this->input->post('street')){ $street = $this->input->post('street'); }else{ $street = ""; }
+				$data = [
+					'lat'		=> $this->input->post('lat'),
+					'lon'		=> $this->input->post('lon'),
+					'city'		=> $city,
+					'state'		=> $state
+					'country'	=> $country,
+					'area'		=> $area,
+					'street'	=> $street,
+					'user'		=> $this->input->post('user')
+				];
+				$this->db->insert('customer_address',$data);
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`lat`,`lon` and `user`(userid) are Required,Optionals are(city,state,country,area,street)']);
+		}
+	}
+
 	public function reset_password()
 	{
 		if($this->input->post('user') && $this->input->post('otp') && $this->input->post('password')){	
@@ -18,7 +65,7 @@ class Authcustomer extends CI_Controller
 				retJson(['_return' => false,'msg' => 'OTP not match']);	
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`user`,`otp` are `password` are Required']);
+			retJson(['_return' => false,'msg' => '`user`,`otp` and `password` are Required']);
 		}
 	}
 
