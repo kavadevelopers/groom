@@ -191,51 +191,6 @@ function getCategory($id)
     return $CI->db->get_where('categories',['id' => $id])->row_array();
 }
 
-function getCustomerData($id)
-{
-    $CI =& get_instance();
-    $customer = $CI->db->get_where('customer',['id' => $id])->row_array();
-    if($customer['rtype'] == 'email' || $customer['rtype'] == 'phone'){
-        if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
-            $customer['profile_pic'] = base_url('uploads/customer/').$customer['profile_pic'];
-        }else{
-            $customer['profile_pic'] = base_url('uploads/common/profile.png');
-        }
-    }else{
-        if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
-            $customer['profile_pic'] = $customer['profile_pic'];
-        }else{
-            $customer['profile_pic'] = base_url('uploads/common/profile.png');
-        }
-    
-    }
-    $customer['usertype']   = "customer";
-    $customer['address']    = $CI->db->get_where('customer_address',['user' => $id])->row_array();
-    return $customer;
-}
-
-function getServiceData($id)
-{
-    $CI =& get_instance();
-    $customer = $CI->db->get_where('service_provider',['id' => $id])->row_array();
-    if($customer['rtype'] == 'email' || $customer['rtype'] == 'phone'){
-        if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
-            $customer['profile_pic'] = base_url('uploads/customer/').$customer['profile_pic'];
-        }else{
-            $customer['profile_pic'] = base_url('uploads/common/profile.png');
-        }
-    }else{
-        if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
-            $customer['profile_pic'] = $customer['profile_pic'];
-        }else{
-            $customer['profile_pic'] = base_url('uploads/common/profile.png');
-        }
-    }
-    $customer['usertype']   = "service";
-    $customer['address']    = $CI->db->get_where('service_address',['user' => $id])->row_array();
-    return $customer;
-}
-
 function generateOtp($user,$user_type,$otp_type,$email = false)
 {
     $CI =& get_instance();
@@ -250,5 +205,10 @@ function generateOtp($user,$user_type,$otp_type,$email = false)
     ];
     $CI->db->insert('z_otp',$data);
     return $otp;
+}
+
+function roundLatLon($lat)
+{
+    return round($lat,6);
 }
 ?>

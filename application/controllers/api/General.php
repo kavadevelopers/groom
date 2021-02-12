@@ -49,7 +49,7 @@ class General extends CI_Controller
 								'cat'		=> _nowDateTime()
 							];
 							$this->db->insert('service_firebase',$firebase);
-							retJson(['_return' => true,'msg' => 'Login Success','data' => getServiceData($this->input->post('user'))]);
+							retJson(['_return' => true,'msg' => 'Login Success','data' => $this->service_model->getServiceData($this->input->post('user'))]);
 						}else{
 							$firebase = [
 								'token'		=> $this->input->post('firebase_token'),
@@ -59,7 +59,7 @@ class General extends CI_Controller
 								'cat'		=> _nowDateTime()
 							];
 							$this->db->insert('customer_firebase',$firebase);
-							retJson(['_return' => true,'msg' => 'Login Success','data' => getCustomerData($this->input->post('user'))]);
+							retJson(['_return' => true,'msg' => 'Login Success','data' => $this->customer_model->getCustomerData($this->input->post('user'))]);
 						}
 					}else{
 						retJson(['_return' => false,'msg' => 'OTP Not Valid']);		

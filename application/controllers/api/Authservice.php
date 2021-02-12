@@ -6,11 +6,50 @@ class Authservice extends CI_Controller
 		parent::__construct();
 	}
 
+	public function verify_profile()
+	{
+		if($this->input->post('doctype') && $this->input->post('user') && isset($_FILES ['doc'])){	
+			$config['upload_path'] = './uploads/service/doc/';
+		    $config['allowed_types']	= '*';
+		    $config['max_size']      = '0';
+		    $config['overwrite']     = FALSE;
+		    $this->load->library('upload', $config);
+			if(isset($_FILES ['doc']) && $_FILES['doc']['error'] == 0){
+				$doc = microtime(true).".".pathinfo($_FILES['doc']['name'], PATHINFO_EXTENSION);
+				$config['file_name'] = $doc;
+		    	$this->upload->initialize($config);
+		    	if($this->upload->do_upload('doc')){
+		    		if($this->db->get_where('service_verified',['user' => $this->input->post('user')])->row_array()){
+		    			$data = [
+			    			'doctpye'	=> $this->input->post('doctype'),
+			    			'image'		=> $doc,
+			    			'user'		=> $this->input->post('user')
+			    		];
+			    		$this->db->where('user',$this->input->post('user'))->update('service_verified',$data);
+		    		}else{
+			    		$data = [
+			    			'doctpye'	=> $this->input->post('doctype'),
+			    			'image'		=> $doc,
+			    			'user'		=> $this->input->post('user')
+			    		];
+			    		$this->db->insert('service_verified',$data);
+			    	}
+		    	}else{
+		    		retJson(['_return' => false,'msg' => 'File Upload Error']);		
+		    	}
+			}else{
+	    		retJson(['_return' => false,'msg' => 'File Upload Error']);		
+	    	}
+		}else{
+			retJson(['_return' => false,'msg' => '`user`,`doctype` and `doc` are Required']);
+		}
+	}
+
 	public function getprofile()
 	{
 		if($this->input->post('user')){
 
-			retJson(['_return' => true,'data' => getServiceData($this->input->post('user'))]);	
+			retJson(['_return' => true,'data' => $this->service_model->getServiceData($this->input->post('user'))]);	
 
 		}else{
 			retJson(['_return' => false,'msg' => '`user` is Required']);
@@ -30,8 +69,8 @@ class Authservice extends CI_Controller
 				if($this->input->post('street')){ $street = $this->input->post('street'); }else{ $street = ""; }
 
 				$data = [
-					'lat'		=> $this->input->post('lat'),
-					'lon'		=> $this->input->post('lon'),
+					'lat'		=> roundLatLon($this->input->post('lat')),
+					'lon'		=> roundLatLon($this->input->post('lon')),
 					'city'		=> $city,
 					'state'		=> $state,
 					'country'	=> $country,
@@ -48,8 +87,8 @@ class Authservice extends CI_Controller
 				if($this->input->post('area')){ $area = $this->input->post('area'); }else{ $area = ""; }
 				if($this->input->post('street')){ $street = $this->input->post('street'); }else{ $street = ""; }
 				$data = [
-					'lat'		=> $this->input->post('lat'),
-					'lon'		=> $this->input->post('lon'),
+					'lat'		=> roundLatLon($this->input->post('lat')),
+					'lon'		=> roundLatLon($this->input->post('lon')),
 					'city'		=> $city,
 					'state'		=> $state,
 					'country'	=> $country,
@@ -85,7 +124,7 @@ class Authservice extends CI_Controller
 				];
 				$this->db->insert('service_provider',$data);
 				$user = $this->db->insert_id();
-				retJson(['_return' => true,'msg' => 'Sign Up Successful.','data' => getServiceData($user)]);
+				retJson(['_return' => true,'msg' => 'Sign Up Successful.','data' => $this->service_model->getServiceData($user)]);
 			}else{
 				retJson(['_return' => false,'msg' => 'Already Registered']);	
 			}
@@ -111,7 +150,7 @@ class Authservice extends CI_Controller
 									'cat'		=> _nowDateTime()
 								];
 								$this->db->insert('service_firebase',$firebase);
-								retJson(['_return' => true,'msg' => 'Login Success','data' => getServiceData($user['id'])]);
+								retJson(['_return' => true,'msg' => 'Login Success','data' => $this->service_model->getServiceData($user['id'])]);
 							}else{
 								retJson(['_return' => false,'msg' => 'Account not approved yet. please contact administrator']);			
 							}		
@@ -153,7 +192,7 @@ class Authservice extends CI_Controller
 								'cat'		=> _nowDateTime()
 							];
 							$this->db->insert('service_firebase',$firebase);
-							retJson(['_return' => true,'msg' => 'Login Success','data' => getServiceData($old['id'])]);
+							retJson(['_return' => true,'msg' => 'Login Success','data' => $this->service_model->getServiceData($old['id'])]);
 						}else{
 							retJson(['_return' => false,'msg' => 'Account not approved yet. please contact administrator']);			
 						}

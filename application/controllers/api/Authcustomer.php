@@ -6,11 +6,50 @@ class Authcustomer extends CI_Controller
 		parent::__construct();
 	}
 
+	public function verify_profile()
+	{
+		if($this->input->post('doctype') && $this->input->post('user') && isset($_FILES ['doc'])){	
+			$config['upload_path'] = './uploads/customer/doc/';
+		    $config['allowed_types']	= '*';
+		    $config['max_size']      = '0';
+		    $config['overwrite']     = FALSE;
+		    $this->load->library('upload', $config);
+			if(isset($_FILES ['doc']) && $_FILES['doc']['error'] == 0){
+				$doc = microtime(true).".".pathinfo($_FILES['doc']['name'], PATHINFO_EXTENSION);
+				$config['file_name'] = $doc;
+		    	$this->upload->initialize($config);
+		    	if($this->upload->do_upload('doc')){
+		    		if($this->db->get_where('customer_verified',['user' => $this->input->post('user')])->row_array()){
+		    			$data = [
+			    			'doctpye'	=> $this->input->post('doctype'),
+			    			'image'		=> $doc,
+			    			'user'		=> $this->input->post('user')
+			    		];
+			    		$this->db->where('user',$this->input->post('user'))->update('customer_verified',$data);
+		    		}else{
+			    		$data = [
+			    			'doctpye'	=> $this->input->post('doctype'),
+			    			'image'		=> $doc,
+			    			'user'		=> $this->input->post('user')
+			    		];
+			    		$this->db->insert('customer_verified',$data);
+			    	}
+		    	}else{
+		    		retJson(['_return' => false,'msg' => 'File Upload Error']);		
+		    	}
+			}else{
+	    		retJson(['_return' => false,'msg' => 'File Upload Error']);		
+	    	}
+		}else{
+			retJson(['_return' => false,'msg' => '`user`,`doctype` and `doc` are Required']);
+		}
+	}
+
 	public function getprofile()
 	{
 		if($this->input->post('user')){
 
-			retJson(['_return' => true,'data' => getCustomerData($this->input->post('user'))]);	
+			retJson(['_return' => true,'data' => $this->customer_model->getCustomerData($this->input->post('user'))]);	
 
 		}else{
 			retJson(['_return' => false,'msg' => '`user` is Required']);
@@ -30,8 +69,8 @@ class Authcustomer extends CI_Controller
 				if($this->input->post('street')){ $street = $this->input->post('street'); }else{ $street = ""; }
 
 				$data = [
-					'lat'		=> $this->input->post('lat'),
-					'lon'		=> $this->input->post('lon'),
+					'lat'		=> roundLatLon($this->input->post('lat')),
+					'lon'		=> roundLatLon($this->input->post('lon')),
 					'city'		=> $city,
 					'state'		=> $state,
 					'country'	=> $country,
@@ -48,8 +87,8 @@ class Authcustomer extends CI_Controller
 				if($this->input->post('area')){ $area = $this->input->post('area'); }else{ $area = ""; }
 				if($this->input->post('street')){ $street = $this->input->post('street'); }else{ $street = ""; }
 				$data = [
-					'lat'		=> $this->input->post('lat'),
-					'lon'		=> $this->input->post('lon'),
+					'lat'		=> roundLatLon($this->input->post('lat')),
+					'lon'		=> roundLatLon($this->input->post('lon')),
 					'city'		=> $city,
 					'state'		=> $state,
 					'country'	=> $country,
@@ -140,7 +179,7 @@ class Authcustomer extends CI_Controller
 								'cat'		=> _nowDateTime()
 							];
 							$this->db->insert('customer_firebase',$firebase);
-							retJson(['_return' => true,'msg' => 'Login Success','data' => getCustomerData($user['id'])]);		
+							retJson(['_return' => true,'msg' => 'Login Success','data' => $this->customer_model->getCustomerData($user['id'])]);		
 						}else{
 							retJson(['_return' => false,'msg' => 'Email and Password not match']);		
 						}
@@ -174,7 +213,7 @@ class Authcustomer extends CI_Controller
 							'cat'		=> _nowDateTime()
 						];
 						$this->db->insert('customer_firebase',$firebase);
-						retJson(['_return' => true,'msg' => 'Login Success','data' => getCustomerData($old['id'])]);	
+						retJson(['_return' => true,'msg' => 'Login Success','data' => $this->customer_model->getCustomerData($old['id'])]);	
 					}else{
 						$profile_url = "";
 						if($this->input->post('profile_url')){
@@ -199,7 +238,7 @@ class Authcustomer extends CI_Controller
 							'cat'		=> _nowDateTime()
 						];
 						$this->db->insert('customer_firebase',$firebase);
-						retJson(['_return' => true,'msg' => 'Login Success','data' => getCustomerData($user)]);	
+						retJson(['_return' => true,'msg' => 'Login Success','data' => $this->customer_model->getCustomerData($user)]);	
 					}
 				}else{
 					retJson(['_return' => false,'msg' => '`social_id` (id of google or facebook),`fname`,`lname` and `email` are Required. `profile_url` is optional']);	
