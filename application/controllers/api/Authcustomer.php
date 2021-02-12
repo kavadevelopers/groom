@@ -94,7 +94,7 @@ class Authcustomer extends CI_Controller
 				}
 			}else if($this->input->post('type') == 'phone'){
 				if($this->input->post('phone')){
-					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'rtype' => 'phone'])->row_array();
+					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'rtype' => 'phone','verified' => '1'])->row_array();
 					if($user){
 						$otp = generateOtp($user['id'],'customer','login');
 						retJson(['_return' => true,'msg' => 'Please Verify OTP.','otp' => $otp,'user' => $user['id']]);	
