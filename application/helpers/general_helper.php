@@ -207,7 +207,10 @@ function getCustomerData($id)
         }else{
             $customer['profile_pic'] = base_url('uploads/common/profile.png');
         }
+    
     }
+    $customer['usertype']   = "customer";
+    $customer['address']    = $CI->db->get_where('customer_address',['user' => $id])->row_array();
     return $customer;
 }
 
@@ -228,6 +231,8 @@ function getServiceData($id)
             $customer['profile_pic'] = base_url('uploads/common/profile.png');
         }
     }
+    $customer['usertype']   = "service";
+    $customer['address']    = $CI->db->get_where('service_address',['user' => $id])->row_array();
     return $customer;
 }
 

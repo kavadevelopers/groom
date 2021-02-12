@@ -6,6 +6,17 @@ class Authservice extends CI_Controller
 		parent::__construct();
 	}
 
+	public function getprofile()
+	{
+		if($this->input->post('user')){
+
+			retJson(['_return' => true,'data' => getServiceData($this->input->post('user'))]);	
+
+		}else{
+			retJson(['_return' => false,'msg' => '`user` is Required']);
+		}
+	}
+
 	public function address()
 	{
 		if($this->input->post('lat') && $this->input->post('lon') && $this->input->post('user')){	
@@ -22,7 +33,7 @@ class Authservice extends CI_Controller
 					'lat'		=> $this->input->post('lat'),
 					'lon'		=> $this->input->post('lon'),
 					'city'		=> $city,
-					'state'		=> $state
+					'state'		=> $state,
 					'country'	=> $country,
 					'area'		=> $area,
 					'street'	=> $street,
@@ -40,7 +51,7 @@ class Authservice extends CI_Controller
 					'lat'		=> $this->input->post('lat'),
 					'lon'		=> $this->input->post('lon'),
 					'city'		=> $city,
-					'state'		=> $state
+					'state'		=> $state,
 					'country'	=> $country,
 					'area'		=> $area,
 					'street'	=> $street,
