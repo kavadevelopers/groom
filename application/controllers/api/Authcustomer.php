@@ -94,7 +94,7 @@ class Authcustomer extends CI_Controller
 				}
 			}else if($this->input->post('type') == 'phone'){
 				if($this->input->post('phone')){
-					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'rtype' => 'phone','verified' => '1'])->row_array();
+					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'ccode'		=> $this->input->post('ccode'),'rtype' => 'phone','verified' => '1'])->row_array();
 					if($user){
 						$otp = generateOtp($user['id'],'customer','login');
 						retJson(['_return' => true,'msg' => 'Please Verify OTP.','otp' => $otp,'user' => $user['id']]);	
@@ -156,7 +156,7 @@ class Authcustomer extends CI_Controller
 
 	public function register()
 	{
-		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('password') && $this->input->post('phone')){
+		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('ccode')){
 			$old = $this->db->get_where('customer',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
 			$oldp = $this->db->get_where('customer',['rtype' => 'email','phone' => $this->input->post('phone'),'df' => '']);
 			if($old->num_rows() == 0 && $oldp->num_rows() == 0){
@@ -165,6 +165,7 @@ class Authcustomer extends CI_Controller
 					'firstname'	=> $this->input->post('fname'),
 					'lastname'	=> $this->input->post('lname'),
 					'email'		=> $this->input->post('email'),
+					'ccode'		=> $this->input->post('ccode'),
 					'phone'		=> $this->input->post('phone'),
 					'password'	=> md5($this->input->post('password')),
 					'verified'	=> '1',
@@ -176,7 +177,7 @@ class Authcustomer extends CI_Controller
 				retJson(['_return' => false,'msg' => 'Email Already Exists.']);
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`phone` and `password` are Required']);	
+			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`phone`,`ccode` and `password` are Required']);	
 		}
 	}
 
@@ -208,8 +209,8 @@ class Authcustomer extends CI_Controller
 
 	public function registerviaphone()
 	{
-		if($this->input->post('phone')){
-			$old = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'df' => '','rtype' => 'phone'])->row_array();
+		if($this->input->post('phone') && $this->input->post('ccode')){
+			$old = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '','rtype' => 'phone'])->row_array();
 			if($old){
 				if($old['verified'] == "1"){
 					retJson(['_return' => false,'msg' => 'Phone No. Already Exists']);	
@@ -218,6 +219,7 @@ class Authcustomer extends CI_Controller
 						'rtype'		=> 'phone',
 						'firstname'	=> "",
 						'lastname'	=> "",
+						'ccode'		=> $this->input->post('ccode'),
 						'phone'		=> $this->input->post('phone'),
 						'verified'	=> '0',
 						'cat'		=> _nowDateTime()
@@ -231,6 +233,7 @@ class Authcustomer extends CI_Controller
 					'rtype'		=> 'phone',
 					'firstname'	=> "",
 					'lastname'	=> "",
+					'ccode'		=> $this->input->post('ccode'),
 					'phone'		=> $this->input->post('phone'),
 					'verified'	=> '0',
 					'cat'		=> _nowDateTime()
