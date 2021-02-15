@@ -331,7 +331,7 @@ class Authservice extends CI_Controller
 		}
 	}
 
-	public function register()
+	public function registerapi()
 	{
 		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('business') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('ccode')){
 			$old = $this->db->get_where('service_provider',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
