@@ -26,6 +26,10 @@ class Customer_model extends CI_Model
 	    $customer['usertype']   		= "customer";
 	    $customer['address']    		= $this->db->get_where('customer_address',['user' => $id])->row_array();
 	    $customer['verified_profile']	= $this->is_verified($id);
+	    $customer['occupations']		= $this->getOccupations($customer);
+	    $customer['skills']				= $this->getSkills($customer);
+	    $customer['educations']			= $this->getEducations($id);
+
 	    return $customer;
 	}
 
@@ -37,5 +41,38 @@ class Customer_model extends CI_Model
 		}else{
 			return "0";
 		}
+	}
+
+	public function getOccupations($customer)
+	{
+		if($customer['occupations'] != NULL){
+			$ar = [];
+			foreach (explode(',', $customer['occupations']) as $key => $value) {
+				$occ = getOccupations($value);
+				array_push($ar, $occ);
+			}
+			return $ar;
+		}else{
+			return NULL;
+		}
+	}
+
+	public function getSkills($customer)
+	{
+		if($customer['skills'] != NULL){
+			$ar = [];
+			foreach (explode(',', $customer['skills']) as $key => $value) {
+				$occ = getSkills($value);
+				array_push($ar, $occ);
+			}
+			return $ar;
+		}else{
+			return NULL;
+		}
+	}
+
+	public function getEducations($id)
+	{
+		return $this->db->get_where('customer_education',['user' => $id])->result_array();
 	}
 }

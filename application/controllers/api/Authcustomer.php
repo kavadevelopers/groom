@@ -6,6 +6,128 @@ class Authcustomer extends CI_Controller
 		parent::__construct();
 	}
 
+	public function verify_gftpe()
+	{
+		if($this->input->post('userid') && $this->input->post('ver_google') && $this->input->post('ver_fb') && $this->input->post('ver_twi') && $this->input->post('ver_phone') && $this->input->post('ver_email')){
+			$this->db->where('id',$this->input->post('userid'))->update('customer',[
+				'ver_google'			=> $this->input->post('ver_google'),
+				'ver_fb'				=> $this->input->post('ver_fb'),
+				'ver_twi'				=> $this->input->post('ver_twi'),
+				'ver_phone'				=> $this->input->post('ver_phone'),
+				'ver_email'				=> $this->input->post('ver_email')
+			]);
+			retJson(['_return' => true,'data' => $this->customer_model->getCustomerData($this->input->post('userid'))]);	
+		}else{
+			retJson(['_return' => false,'msg' => '`userid`,`ver_google`,`ver_fb`,`ver_twi`,`ver_phone`,`ver_email` are Required']);
+		}
+	}
+
+	public function save_certificate()
+	{
+		if($this->input->post('userid') && $this->input->post('certificate') && $this->input->post('certificate_from') && $this->input->post('certificate_year') && $this->input->post('web_link')){
+			$this->db->where('id',$this->input->post('userid'))->update('customer',[
+				'certificate'			=> $this->input->post('certificate'),
+				'certificate_from'		=> $this->input->post('certificate_from'),
+				'certificate_year'		=> $this->input->post('certificate_year'),
+				'web_link'				=> $this->input->post('web_link')
+			]);
+			retJson(['_return' => true,'data' => $this->customer_model->getCustomerData($this->input->post('userid'))]);	
+		}else{
+			retJson(['_return' => false,'msg' => '`userid`,`certificate`,`certificate_from`,`certificate_year`,`web_link` are Required']);
+		}
+	}
+
+	public function education()
+	{
+		if($this->input->post('type')){
+			if($this->input->post('type') == "new"){
+				if($this->input->post('userid') && $this->input->post('country') && $this->input->post('college') && $this->input->post('title') && $this->input->post('month') && $this->input->post('year')){
+					$this->db->insert('customer_education',[
+						'country'	=> $this->input->post('country'),
+						'college'	=> $this->input->post('college'),
+						'title'		=> $this->input->post('title'),
+						'month'		=> $this->input->post('month'),
+						'year'		=> $this->input->post('year'),
+						'user'		=> $this->input->post('userid'),
+						'cat'		=> _nowDateTime()
+					]);
+					retJson(['_return' => true,'data' => $this->customer_model->getCustomerData($this->input->post('userid'))]);	
+				}else{
+					retJson(['_return' => false,'msg' => '`userid`,`country`,`college`,`title`,`month`,`year` are Required']);
+				}
+			}else if($this->input->post('type') == "update"){
+				if($this->input->post('eduid') && $this->input->post('country') && $this->input->post('college') && $this->input->post('title') && $this->input->post('month') && $this->input->post('year')){
+					$this->db->where('id',$this->input->post('eduid'))->update('customer_education',[
+						'country'	=> $this->input->post('country'),
+						'college'	=> $this->input->post('college'),
+						'title'		=> $this->input->post('title'),
+						'month'		=> $this->input->post('month'),
+						'year'		=> $this->input->post('year')
+					]);
+					retJson(['_return' => true,'data' => $this->customer_model->getCustomerData($this->input->post('userid'))]);	
+				}else{
+					retJson(['_return' => false,'msg' => '`eduid`,`country`,`college`,`title`,`month`,`year` are Required']);
+				}
+			}else if($this->input->post('type') == "delete"){
+				if($this->input->post('eduid')){
+					$this->db->where('id',$this->input->post('eduid'))->delete('customer_education');
+					retJson(['_return' => true,'data' => $this->customer_model->getCustomerData($this->input->post('userid'))]);	
+				}else{
+					retJson(['_return' => false,'msg' => '`eduid` is Required']);
+				}
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`type`(new,update,delete) is Required']);
+		}
+	}
+
+	public function save_occupation()
+	{
+		if($this->input->post('userid') && $this->input->post('occupations') && $this->input->post('skills') && $this->input->post('ex_level')){
+			$this->db->where('id',$this->input->post('userid'))->update('customer',[
+				'occupations'	=> $this->input->post('occupations'),
+				'skills'		=> $this->input->post('skills'),
+				'ex_level'		=> $this->input->post('ex_level')
+			]);
+			retJson(['_return' => true,'data' => $this->customer_model->getCustomerData($this->input->post('userid'))]);	
+		}else{
+			retJson(['_return' => false,'msg' => '`userid`,`occupations` (comma saparated ids of occupation),`skills` (comma saparated ids of occupation),`ex_level` are Required']);
+		}
+	}
+	
+	public function save_personal_info()
+	{
+		if($this->input->post('userid') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('description') && $this->input->post('languages')){
+
+			$this->db->where('id',$this->input->post('userid'))->update('customer',[
+				'firstname'	=> $this->input->post('fname'),
+				'lastname'	=> $this->input->post('lname'),
+				'descr'		=> $this->input->post('description'),
+				'languages'	=> $this->input->post('languages')
+			]);
+
+			if(isset($_FILES ['profile_pic'])){
+				$config['upload_path'] = './uploads/customer/';
+			    $config['allowed_types']	= '*';
+			    $config['max_size']      = '0';
+			    $config['overwrite']     = TRUE;
+			    $this->load->library('upload', $config);
+			    if(isset($_FILES ['profile_pic']) && $_FILES['profile_pic']['error'] == 0){
+			    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profile_pic']['name'], PATHINFO_EXTENSION);
+			    	$this->upload->initialize($config);
+			    	if($this->upload->do_upload('profile_pic')){
+			    		$this->db->where('id',$this->input->post('userid'))->update([
+							'profile_pic'	=> $config['file_name']
+						]);
+			    	}
+			    }
+			}
+			retJson(['_return' => true,'data' => $this->customer_model->getCustomerData($this->input->post('userid'))]);	
+		}else{
+			retJson(['_return' => false,'msg' => '`userid`,`fname`,`lname`,`description`,`languages`(English-Basic,Hindi-Basic) are Required,`profile_pic`(multi part) is optional']);
+		}
+	}
+
 	public function verify_profile()
 	{
 		if($this->input->post('doctype') && $this->input->post('user') && isset($_FILES ['doc'])){	

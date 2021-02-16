@@ -211,4 +211,16 @@ function roundLatLon($lat)
 {
     return round($lat,6);
 }
+
+function getOccupations($id)
+{
+    $CI =& get_instance();   
+    return $CI->db->get_where('master_occupations',['id' => $id])->row_array();
+}
+
+function getSkills($id)
+{
+    $CI =& get_instance();   
+    return $CI->db->get_where('master_skills',['id' => $id])->row_array();
+}
 ?>

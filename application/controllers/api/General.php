@@ -6,6 +6,13 @@ class General extends CI_Controller
 		parent::__construct();
 	}
 
+	public function get_master_datas()
+	{
+		$occupations = $this->db->get_where('master_occupations',['df' => ''])->result_array();
+		$skills = $this->db->get_where('master_skills',['df' => ''])->result_array();
+		retJson(['_return' => true,'occupations' => $occupations,'skills' => $skills]);		
+	}
+
 	public function page()
 	{
 		if($this->input->post('page')){
