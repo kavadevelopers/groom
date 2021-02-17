@@ -338,6 +338,22 @@ class Authservice extends CI_Controller
 			$oldp = $this->db->get_where('service_provider',['rtype' => 'email','phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '']);
 			if($old->num_rows() == 0){
 				if($oldp->num_rows() == 0){
+					$config['upload_path'] = './uploads/service/';
+				    $config['allowed_types']	= '*';
+				    $config['max_size']      = '0';
+				    $config['overwrite']     = TRUE;
+				    $this->load->library('upload', $config);
+				    if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
+				    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
+				    	$this->upload->initialize($config);
+				    	if($this->upload->do_upload('profileimg')){
+				    		$profileFileName = $config['file_name'];
+				    	}else{
+				    		$profileFileName = "";
+				    	}
+				    }else{
+			    		$profileFileName = "";
+			    	}
 					$data = [
 						'rtype'			=> 'email',
 						'firstname'		=> $this->input->post('fname'),
@@ -349,6 +365,7 @@ class Authservice extends CI_Controller
 						'services'		=> $this->input->post('services'),
 						'descr'			=> $this->input->post('desc'),
 						'password'		=> md5($this->input->post('password')),
+						'profile_pic'	=> $profileFileName,
 						'verified'		=> '1',
 						'cat'			=> _nowDateTime()
 					];
@@ -361,7 +378,7 @@ class Authservice extends CI_Controller
 				retJson(['_return' => false,'msg' => 'Email Already Exists.']);
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`business`,`phone`,`ccode`,`services`,`desc` and `password` are Required']);	
+			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`business`,`phone`,`ccode`,`services`,`desc` and `password` are Required,`profileimg` is Optional']);	
 		}			
 	}
 }

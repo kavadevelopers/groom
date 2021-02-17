@@ -12,7 +12,7 @@ class Service_model extends CI_Model
 	    $customer = $this->db->get_where('service_provider',['id' => $id])->row_array();
 	    if($customer['rtype'] == 'email' || $customer['rtype'] == 'phone'){
 	        if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
-	            $customer['profile_pic'] = base_url('uploads/customer/').$customer['profile_pic'];
+	            $customer['profile_pic'] = base_url('uploads/service/').$customer['profile_pic'];
 	        }else{
 	            $customer['profile_pic'] = base_url('uploads/common/profile.png');
 	        }
