@@ -245,7 +245,7 @@ class Authservice extends CI_Controller
 				}
 			}else{
 				if($this->input->post('phone') && $this->input->post('ccode')){
-					$user = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'rtype' => 'phone','df' => ''])->row_array();
+					$user = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'rtype' => 'email','df' => ''])->row_array();
 					if($user){
 						$otp = @generateOtp($user['id'],'service','forget_password');
 						retJson(['_return' => true,'msg' => 'Reset password OTP sent to your phone no.','otp' => $otp,'user' => $user['id']]);

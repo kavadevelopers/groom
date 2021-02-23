@@ -260,7 +260,7 @@ class Authcustomer extends CI_Controller
 				}
 			}else{
 				if($this->input->post('phone') && $this->input->post('ccode')){
-					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'rtype' => 'phone','df' => ''])->row_array();
+					$user = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'rtype' => 'email','df' => ''])->row_array();
 					if($user){
 						$otp = @generateOtp($user['id'],'customer','forget_password');
 						retJson(['_return' => true,'msg' => 'Reset password OTP sent to your phone no.','otp' => $otp,'user' => $user['id']]);
@@ -326,6 +326,7 @@ class Authcustomer extends CI_Controller
 				}
 			}else if($this->input->post('type') == 'facebook' || $this->input->post('type') == 'google'){
 				if($this->input->post('social_id') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('email')){
+					if($this->input->post('type') == 'facebook'){ $veriGF = 'ver_fb'; }else{ $veriGF = 'ver_google'; }
 					$old = $this->db->get_where('customer',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
 					if($old){
 						$firebase = [
@@ -349,6 +350,7 @@ class Authcustomer extends CI_Controller
 							'lastname'		=> $this->input->post('lname'),
 							'email'			=> $this->input->post('email'),
 							'profile_pic'	=> $profile_url,
+							$veriGF 		=> '1',
 							'cat'			=> _nowDateTime()
 						];
 						$this->db->insert('customer',$data);
@@ -411,6 +413,7 @@ class Authcustomer extends CI_Controller
 						'firstname'	=> $this->input->post('fname'),
 						'lastname'	=> $this->input->post('lname'),
 						'verified'	=> '1',
+						'ver_phone'	=> '1',
 						'cat'		=> _nowDateTime()
 					];
 					$this->db->where('id',$this->input->post('user'))->update('customer',$data);
