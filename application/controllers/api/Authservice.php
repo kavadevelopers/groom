@@ -6,6 +6,16 @@ class Authservice extends CI_Controller
 		parent::__construct();
 	}
 
+	public function logout()
+	{
+		if($this->input->post('user') && $this->input->post('firebase_token') && $this->input->post('device') && $this->input->post('device_id')){
+			$this->db->where('user',$this->input->post('user'))->where('token',$this->input->post('firebase_token'))->where('device',$this->input->post('device'))->where('device_id',$this->input->post('device_id'))->delete('service_firebase');
+			retJson(['_return' => true,'msg' => 'Logout Success']);	
+		}else{	
+			retJson(['_return' => false,'msg' => '`user`,`device`,`device_id` and `firebase_token` are Required']);
+		}
+	}
+
 	public function verify_profile()
 	{
 		if($this->input->post('doctype') && $this->input->post('user') && isset($_FILES ['doc'])){	
