@@ -288,13 +288,14 @@ class Authcustomer extends CI_Controller
 
 	public function login()
 	{
-		if($this->input->post('type') && $this->input->post('firebase_token') && $this->input->post('device') && $this->input->post('device_id')){
+		if($this->input->post('type') && $this->input->post('firebase_token') && $this->input->post('device') && $this->input->post('device_id') && $this->input->post('desc')){
 			if($this->input->post('type') == 'email'){
 				if($this->input->post('email') && $this->input->post('password')){
 					$user = $this->db->get_where('customer',['email' => $this->input->post('email'),'rtype' => 'email'])->row_array();
 					if($user){
 						if($user['password'] == md5($this->input->post('password'))){
 							$firebase = [
+								'desc'		=> $this->input->post('desc'),
 								'token'		=> $this->input->post('firebase_token'),
 								'device'	=> $this->input->post('device'),
 								'device_id'	=> $this->input->post('device_id'),
@@ -330,6 +331,7 @@ class Authcustomer extends CI_Controller
 					$old = $this->db->get_where('customer',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
 					if($old){
 						$firebase = [
+							'desc'		=> $this->input->post('desc'),
 							'token'		=> $this->input->post('firebase_token'),
 							'device'	=> $this->input->post('device'),
 							'device_id'	=> $this->input->post('device_id'),
@@ -356,6 +358,7 @@ class Authcustomer extends CI_Controller
 						$this->db->insert('customer',$data);
 						$user = $this->db->insert_id();
 						$firebase = [
+							'desc'		=> $this->input->post('desc'),
 							'token'		=> $this->input->post('firebase_token'),
 							'device'	=> $this->input->post('device'),
 							'device_id'	=> $this->input->post('device_id'),
@@ -372,7 +375,7 @@ class Authcustomer extends CI_Controller
 				retJson(['_return' => false,'msg' => 'Not Allowed.']);		
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`type` (facebook,google,email,phone),`device`,`device_id` and `firebase_token` are Required']);	
+			retJson(['_return' => false,'msg' => '`type` (facebook,google,email,phone),`device`,`device_id`,`desc` and `firebase_token` are Required']);	
 		}
 	}
 

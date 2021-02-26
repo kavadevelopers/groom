@@ -116,7 +116,7 @@ class Authservice extends CI_Controller
 
 	public function login()
 	{
-		if($this->input->post('type') && $this->input->post('firebase_token') && $this->input->post('device') && $this->input->post('device_id')){
+		if($this->input->post('type') && $this->input->post('firebase_token') && $this->input->post('device') && $this->input->post('device_id') && $this->input->post('desc')){
 			if($this->input->post('type') == 'email'){
 				if($this->input->post('email') && $this->input->post('password')){
 					$user = $this->db->get_where('service_provider',['email' => $this->input->post('email'),'rtype' => 'email'])->row_array();
@@ -124,6 +124,7 @@ class Authservice extends CI_Controller
 						if($user['password'] == md5($this->input->post('password'))){
 							if($user['approved'] == '1'){
 								$firebase = [
+									'desc'		=> $this->input->post('desc'),
 									'token'		=> $this->input->post('firebase_token'),
 									'device'	=> $this->input->post('device'),
 									'device_id'	=> $this->input->post('device_id'),
@@ -166,6 +167,7 @@ class Authservice extends CI_Controller
 					if($old){
 						if($old['approved'] == '1'){
 							$firebase = [
+								'desc'		=> $this->input->post('desc'),
 								'token'		=> $this->input->post('firebase_token'),
 								'device'	=> $this->input->post('device'),
 								'device_id'	=> $this->input->post('device_id'),
@@ -187,7 +189,7 @@ class Authservice extends CI_Controller
 				retJson(['_return' => false,'msg' => 'Not Allowed.']);		
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`type` (email,phone,facebook,google),`device`,`device_id` and `firebase_token` are Required']);	
+			retJson(['_return' => false,'msg' => '`type` (email,phone,facebook,google),`device`,`device_id`,`desc` and `firebase_token` are Required']);	
 		}
 	}
 

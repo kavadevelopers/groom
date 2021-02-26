@@ -49,6 +49,7 @@ class General extends CI_Controller
 						$this->db->where('user',$this->input->post('user'))->where('otptype','login')->where('usertype','service')->update('z_otp',['used' => '1']);
 						if($this->input->post('usertype') == 'service'){
 							$firebase = [
+								'desc'		=> $this->input->post('desc'),
 								'token'		=> $this->input->post('firebase_token'),
 								'device'	=> $this->input->post('device'),
 								'device_id'	=> $this->input->post('device_id'),
@@ -59,6 +60,7 @@ class General extends CI_Controller
 							retJson(['_return' => true,'msg' => 'Login Success','data' => $this->service_model->getServiceData($this->input->post('user'))]);
 						}else{
 							$firebase = [
+								'desc'		=> $this->input->post('desc'),
 								'token'		=> $this->input->post('firebase_token'),
 								'device'	=> $this->input->post('device'),
 								'device_id'	=> $this->input->post('device_id'),
