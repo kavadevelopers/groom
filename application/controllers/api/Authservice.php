@@ -104,36 +104,6 @@ class Authservice extends CI_Controller
 		}
 	}
 
-	public function registervia_googlefb()
-	{
-		if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id') && $this->input->post('ccode')){
-			$old = $this->db->get_where('service_provider',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
-			if(!$old){
-				$data = [
-					'rtype'			=> $this->input->post('type'),
-					'social_id'		=> $this->input->post('social_id'),
-					'firstname'		=> $this->input->post('fname'),
-					'lastname'		=> $this->input->post('lname'),
-					'ccode'			=> $this->input->post('ccode'),
-					'phone'			=> $this->input->post('phone'),
-					'business'		=> $this->input->post('business'),
-					'services'		=> $this->input->post('services'),
-					'descr'			=> $this->input->post('desc'),
-					'verified'		=> '1',
-					'approved'		=> '1',
-					'cat'			=> _nowDateTime()
-				];
-				$this->db->insert('service_provider',$data);
-				$user = $this->db->insert_id();
-				retJson(['_return' => true,'msg' => 'Sign Up Successful.','data' => $this->service_model->getServiceData($user)]);
-			}else{
-				retJson(['_return' => false,'msg' => 'Already Registered']);	
-			}
-		}else{
-			retJson(['_return' => false,'msg' => '`type`(facebook,google),`social_id`,`fname`,`lname`,`business`,`phone`,`ccode`,`services` and `desc` are Required']);	
-		}
-	}
-
 	public function login()
 	{
 		if($this->input->post('type') && $this->input->post('firebase_token') && $this->input->post('device') && $this->input->post('device_id')){
@@ -261,124 +231,125 @@ class Authservice extends CI_Controller
 		}
 	}
 
-	public function verify_registerphone()
-	{
-		if($this->input->post('user') && $this->input->post('otp')){
-			$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'service','used' => '0'])->row_array();
-			if($otp){
-				if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc')){
-					$data = [
-						'firstname'		=> $this->input->post('fname'),
-						'lastname'		=> $this->input->post('lname'),
-						'business'		=> $this->input->post('business'),
-						'services'		=> $this->input->post('services'),
-						'descr'			=> $this->input->post('desc'),
-						'verified'		=> '1',
-						'cat'			=> _nowDateTime()
-					];
-					$this->db->where('id',$this->input->post('user'))->update('service_provider',$data);
-					$this->db->where('user',$this->input->post('user'))->where('otptype','register_phone')->where('usertype','service')->update('z_otp',['used' => '1']);
-					retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
-				}else{
-					retJson(['_return' => false,'msg' => '`fname`,`lname`,`business`,`phone`,`services` and `desc` are Required']);	
-				}
-			}else{
-				retJson(['_return' => false,'msg' => 'OTP Not Valid']);		
-			}
-		}else{
-			retJson(['_return' => false,'msg' => '`user`(user_id) and `otp` is Required']);	
-		}	
-	}
-
-	public function registerviaphone()
-	{
-		if($this->input->post('phone') && $this->input->post('ccode')){
-			$old = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '','rtype' => 'phone'])->row_array();
-			if($old){
-				if($old['verified'] == "1"){
-					retJson(['_return' => false,'msg' => 'Phone No. Already Exists']);	
-				}else{
-					$data = [
-						'rtype'		=> 'phone',
-						'firstname'	=> "",
-						'lastname'	=> "",
-						'ccode'		=> $this->input->post('ccode'),
-						'phone'		=> $this->input->post('phone'),
-						'verified'	=> '0',
-						'cat'		=> _nowDateTime()
-					];
-					$this->db->where('id',$old['id'])->update('service_provider',$data);
-					$otp = generateOtp($old['id'],'service','register_phone');
-					retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $old['id'],'otp' => $otp]);
-				}
-			}else{
-				$data = [
-					'rtype'		=> 'phone',
-					'firstname'	=> "",
-					'lastname'	=> "",
-					'ccode'		=> $this->input->post('ccode'),
-					'phone'		=> $this->input->post('phone'),
-					'verified'	=> '0',
-					'cat'		=> _nowDateTime()
-				];
-				$this->db->insert('service_provider',$data);
-				$user = $this->db->insert_id();
-				$otp = generateOtp($user,'service','register_phone');
-				retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $user,'otp' => $otp]);
-			}
-		}else{
-			retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);	
-		}
-	}
-
 	public function registerapi()
 	{
-		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('business') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('ccode')){
-			$old = $this->db->get_where('service_provider',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
-			$oldp = $this->db->get_where('service_provider',['rtype' => 'email','phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '']);
-			if($old->num_rows() == 0){
-				if($oldp->num_rows() == 0){
-					$config['upload_path'] = './uploads/service/';
-				    $config['allowed_types']	= '*';
-				    $config['max_size']      = '0';
-				    $config['overwrite']     = TRUE;
-				    $this->load->library('upload', $config);
-				    if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
-				    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
-				    	$this->upload->initialize($config);
-				    	if($this->upload->do_upload('profileimg')){
-				    		$profileFileName = $config['file_name'];
-				    	}else{
-				    		$profileFileName = "";
-				    	}
-				    }else{
-			    		$profileFileName = "";
-			    	}
-					$data = [
-						'rtype'			=> 'email',
-						'firstname'		=> $this->input->post('fname'),
-						'lastname'		=> $this->input->post('lname'),
-						'email'			=> $this->input->post('email'),
-						'ccode'			=> $this->input->post('ccode'),
-						'phone'			=> $this->input->post('phone'),
-						'business'		=> $this->input->post('business'),
-						'services'		=> $this->input->post('services'),
-						'descr'			=> $this->input->post('desc'),
-						'password'		=> md5($this->input->post('password')),
-						'profile_pic'	=> $profileFileName,
-						'verified'		=> '1',
-						'cat'			=> _nowDateTime()
-					];
-					$this->db->insert('service_provider',$data);
-					retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
+		if($this->input->post('type')){
+			if ($this->input->post('type') == 'email') {
+				if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('business') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('ccode')){
+					$old = $this->db->get_where('service_provider',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
+					$oldp = $this->db->get_where('service_provider',['rtype' => 'email','phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '']);
+					if($old->num_rows() == 0){
+						if($oldp->num_rows() == 0){
+							$config['upload_path'] = './uploads/service/';
+						    $config['allowed_types']	= '*';
+						    $config['max_size']      = '0';
+						    $config['overwrite']     = TRUE;
+						    $this->load->library('upload', $config);
+						    if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
+						    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
+						    	$this->upload->initialize($config);
+						    	if($this->upload->do_upload('profileimg')){
+						    		$profileFileName = $config['file_name'];
+						    	}else{
+						    		$profileFileName = "";
+						    	}
+						    }else{
+					    		$profileFileName = "";
+					    	}
+							$data = [
+								'rtype'			=> 'email',
+								'firstname'		=> $this->input->post('fname'),
+								'lastname'		=> $this->input->post('lname'),
+								'email'			=> $this->input->post('email'),
+								'ccode'			=> $this->input->post('ccode'),
+								'phone'			=> $this->input->post('phone'),
+								'business'		=> $this->input->post('business'),
+								'services'		=> $this->input->post('services'),
+								'descr'			=> $this->input->post('desc'),
+								'password'		=> md5($this->input->post('password')),
+								'profile_pic'	=> $profileFileName,
+								'verified'		=> '1',
+								'cat'			=> _nowDateTime()
+							];
+							$this->db->insert('service_provider',$data);
+							retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
+						}else{
+							retJson(['_return' => false,'msg' => 'Phone Already Exists.']);	
+						}
+					}else{
+						retJson(['_return' => false,'msg' => 'Email Already Exists.']);
+					}
 				}else{
-					retJson(['_return' => false,'msg' => 'Phone Already Exists.']);	
+					retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`business`,`phone`,`ccode`,`services`,`desc` and `password` are Required,`profileimg` is Optional']);	
+				}			
+			}elseif ($this->input->post('type') == 'phone') {
+				if($this->input->post('phone') && $this->input->post('ccode')){
+					$old = $this->db->get_where('service_provider',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '','rtype' => 'phone'])->row_array();
+					if($old){
+						if($old['verified'] == "1"){
+							retJson(['_return' => false,'msg' => 'Phone No. Already Exists']);	
+						}else{
+							$data = [
+								'rtype'		=> 'phone',
+								'firstname'	=> "",
+								'lastname'	=> "",
+								'ccode'		=> $this->input->post('ccode'),
+								'phone'		=> $this->input->post('phone'),
+								'verified'	=> '0',
+								'cat'		=> _nowDateTime()
+							];
+							$this->db->where('id',$old['id'])->update('service_provider',$data);
+							$otp = generateOtp($old['id'],'service','register_phone');
+							retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $old['id'],'otp' => $otp]);
+						}
+					}else{
+						$data = [
+							'rtype'		=> 'phone',
+							'firstname'	=> "",
+							'lastname'	=> "",
+							'ccode'		=> $this->input->post('ccode'),
+							'phone'		=> $this->input->post('phone'),
+							'verified'	=> '0',
+							'cat'		=> _nowDateTime()
+						];
+						$this->db->insert('service_provider',$data);
+						$user = $this->db->insert_id();
+						$otp = generateOtp($user,'service','register_phone');
+						retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $user,'otp' => $otp]);
+					}
+				}else{
+					retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);	
 				}
-			}else{
-				retJson(['_return' => false,'msg' => 'Email Already Exists.']);
+			}elseif ($this->input->post('type') == 'googlefb') {
+				if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id') && $this->input->post('ccode')){
+					$old = $this->db->get_where('service_provider',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
+					if(!$old){
+						$data = [
+							'rtype'			=> $this->input->post('type'),
+							'social_id'		=> $this->input->post('social_id'),
+							'firstname'		=> $this->input->post('fname'),
+							'lastname'		=> $this->input->post('lname'),
+							'ccode'			=> $this->input->post('ccode'),
+							'phone'			=> $this->input->post('phone'),
+							'business'		=> $this->input->post('business'),
+							'services'		=> $this->input->post('services'),
+							'descr'			=> $this->input->post('desc'),
+							'verified'		=> '1',
+							'approved'		=> '1',
+							'cat'			=> _nowDateTime()
+						];
+						$this->db->insert('service_provider',$data);
+						$user = $this->db->insert_id();
+						retJson(['_return' => true,'msg' => 'Sign Up Successful.','data' => $this->service_model->getServiceData($user)]);
+					}else{
+						retJson(['_return' => false,'msg' => 'Already Registered']);	
+					}
+				}else{
+					retJson(['_return' => false,'msg' => '`type`(facebook,google),`social_id`,`fname`,`lname`,`business`,`phone`,`ccode`,`services` and `desc` are Required']);	
+				}
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`business`,`phone`,`ccode`,`services`,`desc` and `password` are Required,`profileimg` is Optional']);	
-		}			
+			retJson(['_return' => false,'msg' => '`type`(phone,email,googlefb) is Required']);
+		}
 	}
 }

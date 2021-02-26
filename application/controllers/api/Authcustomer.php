@@ -378,65 +378,50 @@ class Authcustomer extends CI_Controller
 
 	public function registerapi()
 	{
-		if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('ccode')){
-			$old = $this->db->get_where('customer',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
-			$oldp = $this->db->get_where('customer',['rtype' => 'email','phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '']);
-			if($old->num_rows() == 0 && $oldp->num_rows() == 0){
-				$data = [
-					'rtype'		=> 'email',
-					'firstname'	=> $this->input->post('fname'),
-					'lastname'	=> $this->input->post('lname'),
-					'email'		=> $this->input->post('email'),
-					'ccode'		=> $this->input->post('ccode'),
-					'phone'		=> $this->input->post('phone'),
-					'password'	=> md5($this->input->post('password')),
-					'verified'	=> '1',
-					'cat'		=> _nowDateTime()
-				];
-				$this->db->insert('customer',$data);
-				retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
-			}else{
-				retJson(['_return' => false,'msg' => 'Email Already Exists.']);
-			}
-		}else{
-			retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`phone`,`ccode` and `password` are Required']);	
-		}
-	}
-
-	public function verify_registerphone()
-	{
-		if($this->input->post('user') && $this->input->post('otp')){
-			$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'customer','used' => '0'])->row_array();
-			if($otp){
-				if($this->input->post('fname') && $this->input->post('lname')){
+		if ($this->input->post('type') && $this->input->post('type') == 'email') {
+			if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('password') && $this->input->post('phone') && $this->input->post('ccode')){
+				$old = $this->db->get_where('customer',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
+				$oldp = $this->db->get_where('customer',['rtype' => 'email','phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '']);
+				if($old->num_rows() == 0 && $oldp->num_rows() == 0){
 					$data = [
+						'rtype'		=> 'email',
 						'firstname'	=> $this->input->post('fname'),
 						'lastname'	=> $this->input->post('lname'),
+						'email'		=> $this->input->post('email'),
+						'ccode'		=> $this->input->post('ccode'),
+						'phone'		=> $this->input->post('phone'),
+						'password'	=> md5($this->input->post('password')),
 						'verified'	=> '1',
-						'ver_phone'	=> '1',
 						'cat'		=> _nowDateTime()
 					];
-					$this->db->where('id',$this->input->post('user'))->update('customer',$data);
-					$this->db->where('user',$this->input->post('user'))->where('otptype','register_phone')->where('usertype','customer')->update('z_otp',['used' => '1']);
+					$this->db->insert('customer',$data);
 					retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
 				}else{
-					retJson(['_return' => false,'msg' => '`fname` and `lname` is Required']);		
+					retJson(['_return' => false,'msg' => 'Email Already Exists.']);
 				}
 			}else{
-				retJson(['_return' => false,'msg' => 'OTP Not Valid']);		
-			}
-		}else{
-			retJson(['_return' => false,'msg' => '`user`(user_id) and `otp` is Required']);	
-		}	
-	}
-
-	public function registerviaphone()
-	{
-		if($this->input->post('phone') && $this->input->post('ccode')){
-			$old = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '','rtype' => 'phone'])->row_array();
-			if($old){
-				if($old['verified'] == "1"){
-					retJson(['_return' => false,'msg' => 'Phone No. Already Exists']);	
+				retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`phone`,`ccode` and `password` are Required']);	
+			}	
+		}else if($this->input->post('type') && $this->input->post('type') == 'phone'){
+			if($this->input->post('phone') && $this->input->post('ccode')){
+				$old = $this->db->get_where('customer',['phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '','rtype' => 'phone'])->row_array();
+				if($old){
+					if($old['verified'] == "1"){
+						retJson(['_return' => false,'msg' => 'Phone No. Already Exists']);	
+					}else{
+						$data = [
+							'rtype'		=> 'phone',
+							'firstname'	=> "",
+							'lastname'	=> "",
+							'ccode'		=> $this->input->post('ccode'),
+							'phone'		=> $this->input->post('phone'),
+							'verified'	=> '0',
+							'cat'		=> _nowDateTime()
+						];
+						$this->db->where('id',$old['id'])->update('customer',$data);
+						$otp = generateOtp($old['id'],'customer','register_phone');
+						retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $old['id'],'otp' => $otp]);
+					}
 				}else{
 					$data = [
 						'rtype'		=> 'phone',
@@ -447,27 +432,16 @@ class Authcustomer extends CI_Controller
 						'verified'	=> '0',
 						'cat'		=> _nowDateTime()
 					];
-					$this->db->where('id',$old['id'])->update('customer',$data);
-					$otp = generateOtp($old['id'],'customer','register_phone');
-					retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $old['id'],'otp' => $otp]);
+					$this->db->insert('customer',$data);
+					$user = $this->db->insert_id();
+					$otp = generateOtp($user,'customer','register_phone');
+					retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $user,'otp' => $otp]);
 				}
 			}else{
-				$data = [
-					'rtype'		=> 'phone',
-					'firstname'	=> "",
-					'lastname'	=> "",
-					'ccode'		=> $this->input->post('ccode'),
-					'phone'		=> $this->input->post('phone'),
-					'verified'	=> '0',
-					'cat'		=> _nowDateTime()
-				];
-				$this->db->insert('customer',$data);
-				$user = $this->db->insert_id();
-				$otp = generateOtp($user,'customer','register_phone');
-				retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $user,'otp' => $otp]);
+				retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);	
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);	
+			retJson(['_return' => false,'msg' => '`type`(email,phone) is Required']);	
 		}
 	}
 }

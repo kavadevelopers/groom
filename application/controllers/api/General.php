@@ -75,6 +75,59 @@ class General extends CI_Controller
 					retJson(['_return' => false,'msg' => '`device`,`device_id` and `firebase_token` are Required']);	
 				}
 			}
+			else if ($this->input->post('otptype') == 'register') {
+				if($this->input->post('usertype') == 'service'){
+					if($this->input->post('user') && $this->input->post('otp')){
+						$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'service','used' => '0'])->row_array();
+						if($otp){
+							if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc')){
+								$data = [
+									'firstname'		=> $this->input->post('fname'),
+									'lastname'		=> $this->input->post('lname'),
+									'business'		=> $this->input->post('business'),
+									'services'		=> $this->input->post('services'),
+									'descr'			=> $this->input->post('desc'),
+									'verified'		=> '1',
+									'cat'			=> _nowDateTime()
+								];
+								$this->db->where('id',$this->input->post('user'))->update('service_provider',$data);
+								$this->db->where('user',$this->input->post('user'))->where('otptype','register_phone')->where('usertype','service')->update('z_otp',['used' => '1']);
+								retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
+							}else{
+								retJson(['_return' => false,'msg' => '`fname`,`lname`,`business`,`phone`,`services` and `desc` are Required']);	
+							}
+						}else{
+							retJson(['_return' => false,'msg' => 'OTP Not Valid']);		
+						}
+					}else{
+						retJson(['_return' => false,'msg' => '`user`(user_id) and `otp` is Required']);	
+					}	
+				}else{
+					if($this->input->post('user') && $this->input->post('otp')){
+						$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'customer','used' => '0'])->row_array();
+						if($otp){
+							if($this->input->post('fname') && $this->input->post('lname')){
+								$data = [
+									'firstname'	=> $this->input->post('fname'),
+									'lastname'	=> $this->input->post('lname'),
+									'verified'	=> '1',
+									'ver_phone'	=> '1',
+									'cat'		=> _nowDateTime()
+								];
+								$this->db->where('id',$this->input->post('user'))->update('customer',$data);
+								$this->db->where('user',$this->input->post('user'))->where('otptype','register_phone')->where('usertype','customer')->update('z_otp',['used' => '1']);
+								retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
+							}else{
+								retJson(['_return' => false,'msg' => '`fname` and `lname` is Required']);		
+							}
+						}else{
+							retJson(['_return' => false,'msg' => 'OTP Not Valid']);		
+						}
+					}else{
+						retJson(['_return' => false,'msg' => '`user`(user_id) and `otp` is Required']);	
+					}
+				}
+			}
 		}else{
 			retJson(['_return' => false,'msg' => '`otptype` (register,login),`user` (User id),`usertype` (customer,service) and `otp` are Required']);
 		}
