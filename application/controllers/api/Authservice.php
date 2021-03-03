@@ -453,6 +453,8 @@ class Authservice extends CI_Controller
 				}else{
 					retJson(['_return' => false,'msg' => '`social_id`,`fname`,`lname`,`business`,`phone`,`ccode`,`services` and `desc` are Required']);	
 				}
+			}else{
+				retJson(['_return' => false,'msg' => '`type` not found']);	
 			}
 		}else{
 			retJson(['_return' => false,'msg' => '`type`(phone,email,facebook,google) is Required']);
