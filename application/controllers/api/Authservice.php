@@ -133,25 +133,11 @@ class Authservice extends CI_Controller
 	public function get_notifications_setting()
 	{
 		if($this->input->post('user')){
-			$old = $this->db->get_where('service_notification',['user' => $this->input->post('user')])->row_array();
+			$old = $this->db->get_where('service_provider',['id' => $this->input->post('user')])->row_array();
 			if($old){
-				retJson(['_return' => true,'data' => $old]);
+				retJson(['_return' => true,'data' => $this->service_model->getNotificationSetting($this->input->post('user'))]);
 			}else{
-				$data = [
-					'm_email'		=> 0,
-					'm_text'		=> 0,
-					'm_push'		=> 1,
-					'r_email'		=> 1,
-					'r_text'		=> 1,
-					'r_push'		=> 1,
-					'pt_email'		=> 1,
-					'pt_text'		=> 1,
-					'pt_push'		=> 1,
-					'pc_email'		=> 1,
-					'pc_text'		=> 1,
-					'pc_push'		=> 1
-				];
-				retJson(['_return' => true,'data' => $data]);
+				retJson(['_return' => false,'msg' => 'user not found']);
 			}
 		}else{	
 			retJson(['_return' => false,'msg' => '`user` is Required']);
@@ -161,44 +147,48 @@ class Authservice extends CI_Controller
 	public function manage_notifications()
 	{
 		if($this->input->post('user') && $this->input->post('m_email') && $this->input->post('m_text') && $this->input->post('m_push') && $this->input->post('r_email') && $this->input->post('r_text') && $this->input->post('r_push') && $this->input->post('pt_email') && $this->input->post('pt_text') && $this->input->post('pt_push') && $this->input->post('pc_email') && $this->input->post('pc_text') && $this->input->post('pc_push')){
-			
-			$old = $this->db->get_where('service_notification',['user' => $this->input->post('user')])->row_array();
-			if($old){
-				$data = [
-					'user'			=> $this->input->post('user'),
-					'm_email'		=> $this->input->post('m_email'),
-					'm_text'		=> $this->input->post('m_text'),
-					'm_push'		=> $this->input->post('m_push'),
-					'r_email'		=> $this->input->post('r_email'),
-					'r_text'		=> $this->input->post('r_text'),
-					'r_push'		=> $this->input->post('r_push'),
-					'pt_email'		=> $this->input->post('pt_email'),
-					'pt_text'		=> $this->input->post('pt_text'),
-					'pt_push'		=> $this->input->post('pt_push'),
-					'pc_email'		=> $this->input->post('pc_email'),
-					'pc_text'		=> $this->input->post('pc_text'),
-					'pc_push'		=> $this->input->post('pc_push')
-				];
-				$this->db->where('user',$this->input->post('user'))->update('service_notification',$data);
+			$user = $this->db->get_where('service_provider',['id' => $this->input->post('user')])->row_array();
+			if($user){
+				$old = $this->db->get_where('service_notification',['user' => $this->input->post('user')])->row_array();
+				if($old){
+					$data = [
+						'user'			=> $this->input->post('user'),
+						'm_email'		=> $this->input->post('m_email'),
+						'm_text'		=> $this->input->post('m_text'),
+						'm_push'		=> $this->input->post('m_push'),
+						'r_email'		=> $this->input->post('r_email'),
+						'r_text'		=> $this->input->post('r_text'),
+						'r_push'		=> $this->input->post('r_push'),
+						'pt_email'		=> $this->input->post('pt_email'),
+						'pt_text'		=> $this->input->post('pt_text'),
+						'pt_push'		=> $this->input->post('pt_push'),
+						'pc_email'		=> $this->input->post('pc_email'),
+						'pc_text'		=> $this->input->post('pc_text'),
+						'pc_push'		=> $this->input->post('pc_push')
+					];
+					$this->db->where('user',$this->input->post('user'))->update('service_notification',$data);
+				}else{
+					$data = [
+						'user'			=> $this->input->post('user'),
+						'm_email'		=> $this->input->post('m_email'),
+						'm_text'		=> $this->input->post('m_text'),
+						'm_push'		=> $this->input->post('m_push'),
+						'r_email'		=> $this->input->post('r_email'),
+						'r_text'		=> $this->input->post('r_text'),
+						'r_push'		=> $this->input->post('r_push'),
+						'pt_email'		=> $this->input->post('pt_email'),
+						'pt_text'		=> $this->input->post('pt_text'),
+						'pt_push'		=> $this->input->post('pt_push'),
+						'pc_email'		=> $this->input->post('pc_email'),
+						'pc_text'		=> $this->input->post('pc_text'),
+						'pc_push'		=> $this->input->post('pc_push')
+					];
+					$this->db->insert('service_notification',$data);
+				}
+				retJson(['_return' => true,'msg' => 'Notification Settings Saved']);	
 			}else{
-				$data = [
-					'user'			=> $this->input->post('user'),
-					'm_email'		=> $this->input->post('m_email'),
-					'm_text'		=> $this->input->post('m_text'),
-					'm_push'		=> $this->input->post('m_push'),
-					'r_email'		=> $this->input->post('r_email'),
-					'r_text'		=> $this->input->post('r_text'),
-					'r_push'		=> $this->input->post('r_push'),
-					'pt_email'		=> $this->input->post('pt_email'),
-					'pt_text'		=> $this->input->post('pt_text'),
-					'pt_push'		=> $this->input->post('pt_push'),
-					'pc_email'		=> $this->input->post('pc_email'),
-					'pc_text'		=> $this->input->post('pc_text'),
-					'pc_push'		=> $this->input->post('pc_push')
-				];
-				$this->db->insert('service_notification',$data);
+				retJson(['_return' => false,'msg' => 'user not found']);
 			}
-			retJson(['_return' => true,'msg' => 'Notification Settings Saved']);	
 		}else{	
 			retJson(['_return' => false,'msg' => '`user`,`m_email`,`m_text`,`m_push`,`r_email`,`r_text`,`r_push`,`pt_email`,`pt_text`,`pt_push`,`pc_email`,`pc_text`,`pc_push` are Required']);
 		}
