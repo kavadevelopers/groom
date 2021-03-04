@@ -7,6 +7,14 @@ class General_model extends CI_Model
 		parent::__construct();
 	}
 
+	public function insertServiceDetails($user)
+	{
+		$old = $this->db->get_where('service_provider_details',['user' => $user])->row_array();
+		if(!$old){
+			$this->db->insert('service_provider_details',['user' => $user]);
+		}
+	}
+
 	public function get_setting()
 	{
 		return $this->db->get_where('setting',['id' => '1'])->row_array();

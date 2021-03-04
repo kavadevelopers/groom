@@ -6,6 +6,130 @@ class Authservice extends CI_Controller
 		parent::__construct();
 	}
 
+	public function save_personalinfo()
+	{	
+		if($this->input->post('user') && $this->input->post('type')){
+			if ($this->input->post('type') == "legal_name") {
+				if($this->input->post('fname') && $this->input->post('lname')){
+					$this->db->where('id',$this->input->post('user'))->update('service_provider',['firstname' => $this->input->post('fname'),'lastname' => $this->input->post('lname')]);
+					retJson(['_return' => true,'msg' => 'Legal Name saved.']);	
+				}else{
+					retJson(['_return' => false,'msg' => '`fname` and `lname` are Required']);
+				}
+			}
+
+			else if ($this->input->post('type') == "email") {
+				if($this->input->post('email')){
+					$user = $this->db->get_where('service_provider',['id' => $this->input->post('user')])->row_array();
+					if($user['rtype'] == "email"){
+						$old = $this->db->get_where('service_provider',['rtype' => 'email','email' => $this->input->post('email')])->row_array();
+						if(!$old){
+							$this->db->where('id',$this->input->post('user'))->update('service_provider',['email' => $this->input->post('email')]);
+							retJson(['_return' => true,'msg' => 'Email saved.']);	
+						}else{
+							retJson(['_return' => false,'msg' => 'Email Address is Already exists.']);		
+						}
+					}else{
+						$this->db->where('id',$this->input->post('user'))->update('service_provider',['email' => $this->input->post('email')]);
+						retJson(['_return' => true,'msg' => 'Email saved.']);	
+					}
+				}else{
+					retJson(['_return' => false,'msg' => '`email` is Required']);
+				}	
+			}
+
+			else if ($this->input->post('type') == "phone") {
+				if($this->input->post('phone') && $this->input->post('ccode')){
+					$user = $this->db->get_where('service_provider',['id' => $this->input->post('user')])->row_array();
+					if($user['rtype'] == "phone"){
+						$old = $this->db->get_where('service_provider',['rtype' => 'phone','ccode' => $this->input->post('ccode'),'phone' => $this->input->post('phone')])->row_array();
+						if(!$old){
+							$this->db->where('id',$this->input->post('user'))->update('service_provider',['ccode' => $this->input->post('ccode'),'phone' => $this->input->post('phone')]);
+							retJson(['_return' => true,'msg' => 'Phone saved.']);		
+						}else{
+							retJson(['_return' => false,'msg' => 'Phone no. is Already exists.']);		
+						}
+					}else{
+						$this->db->where('id',$this->input->post('user'))->update('service_provider',['ccode' => $this->input->post('ccode'),'phone' => $this->input->post('phone')]);
+						retJson(['_return' => true,'msg' => 'Phone saved.']);	
+					}
+				}else{
+					retJson(['_return' => false,'msg' => '`phone` and `ccode`(Country Code) is Required']);
+				}	
+			}
+
+			else if($this->input->post('type') == "gender"){
+				if($this->input->post('gender')){
+					$this->general_model->insertServiceDetails($this->input->post('user'));
+					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['gender' => $this->input->post('gender')]);
+				}else{
+					retJson(['_return' => false,'msg' => '`gender` is Required']);
+				}
+			}
+
+			else if($this->input->post('type') == "dob"){
+				if($this->input->post('dob')){
+					$this->general_model->insertServiceDetails($this->input->post('user'));
+					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['dob' => dd($this->input->post('dob'))]);
+				}else{
+					retJson(['_return' => false,'msg' => '`dob` is Required']);
+				}
+			}
+
+			else if($this->input->post('type') == "goverment"){
+				if($this->input->post('goverment')){
+					$this->general_model->insertServiceDetails($this->input->post('user'));
+					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['goverment' => $this->input->post('goverment')]);
+				}else{
+					retJson(['_return' => false,'msg' => '`goverment` is Required']);
+				}
+			}
+
+			else if($this->input->post('type') == "address"){
+				if($this->input->post('address')){
+					$this->general_model->insertServiceDetails($this->input->post('user'));
+					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['address' => $this->input->post('address')]);
+				}else{
+					retJson(['_return' => false,'msg' => '`address` is Required']);
+				}
+			}
+
+			else if($this->input->post('type') == "emergency_contact"){
+				if($this->input->post('emergency_contact')){
+					$this->general_model->insertServiceDetails($this->input->post('user'));
+					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['emergency_contact' => $this->input->post('emergency_contact')]);
+				}else{
+					retJson(['_return' => false,'msg' => '`emergency_contact` is Required']);
+				}
+			}
+
+			else{
+				retJson(['_return' => false,'msg' => 'Type not found']);
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`user` and `type`(legal_name,gender,dob,goverment,email,phone,address,emergency_contact) are Required']);
+		}
+	}
+
+	public function change_password()
+	{
+		if($this->input->post('oldpassword') && $this->input->post('newpassword') && $this->input->post('user')){
+			$user = $this->db->get_where('service_provider',['id' => $this->input->post('user')])->row_array();
+			if($user){
+				if($user['password'] == md5($this->input->post('oldpassword'))){
+					$this->db->where('id',$this->input->post('user'))->update('service_provider',['password' => md5($this->input->post('newpassword'))]);
+					retJson(['_return' => false,'msg' => 'Password changed.']);		
+				}else{
+					retJson(['_return' => false,'msg' => 'Old Password do not match']);		
+				}
+			}else{
+				retJson(['_return' => false,'msg' => 'User not found']);	
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`user`,`oldpassword` and `newpassword` are Required']);
+		}
+	}
+
 	public function get_notifications_setting()
 	{
 		if($this->input->post('user')){
