@@ -6,6 +6,36 @@ class Authservice extends CI_Controller
 		parent::__construct();
 	}
 
+	public function change_dp()
+	{
+		if($this->input->post('user')){
+			$user = $this->db->get_where('service_provider',['id' => $this->input->post('user')])->row_array();
+			if($user){
+				$config['upload_path'] = './uploads/service/';
+			    $config['allowed_types']	= '*';
+			    $config['max_size']      = '0';
+			    $config['overwrite']     = TRUE;
+			    $this->load->library('upload', $config);
+			    if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
+			    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
+			    	$this->upload->initialize($config);
+			    	if($this->upload->do_upload('profileimg')){
+			    		$this->db->where('id',$this->input->post('user'))->update('service_provider',['profile_pic' => $config['file_name']]);
+			    		retJson(['_return' => true,'msg' => 'Profile Image changed.','data' => $this->service_model->getServiceData($this->input->post('user'))]);
+			    	}else{
+			    		retJson(['_return' => false,'msg' => 'error in image upload']);
+			    	}
+			    }else{
+		    		retJson(['_return' => false,'msg' => 'profileimg is required']);
+		    	}
+			}else{
+				retJson(['_return' => false,'msg' => 'user not found']);
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`user` is Required']);
+		}
+	}
+
 	public function save_personalinfo()
 	{	
 		if($this->input->post('user') && $this->input->post('type')){
