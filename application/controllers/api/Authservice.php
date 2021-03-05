@@ -92,6 +92,7 @@ class Authservice extends CI_Controller
 				if($this->input->post('gender')){
 					$this->general_model->insertServiceDetails($this->input->post('user'));
 					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['gender' => $this->input->post('gender')]);
+					retJson(['_return' => true,'msg' => 'Gender saved.']);
 				}else{
 					retJson(['_return' => false,'msg' => '`gender` is Required']);
 				}
@@ -101,6 +102,7 @@ class Authservice extends CI_Controller
 				if($this->input->post('dob')){
 					$this->general_model->insertServiceDetails($this->input->post('user'));
 					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['dob' => dd($this->input->post('dob'))]);
+					retJson(['_return' => true,'msg' => 'DOB saved.']);
 				}else{
 					retJson(['_return' => false,'msg' => '`dob` is Required']);
 				}
@@ -110,6 +112,7 @@ class Authservice extends CI_Controller
 				if($this->input->post('goverment')){
 					$this->general_model->insertServiceDetails($this->input->post('user'));
 					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['goverment' => $this->input->post('goverment')]);
+					retJson(['_return' => true,'msg' => 'Goverment Id saved.']);
 				}else{
 					retJson(['_return' => false,'msg' => '`goverment` is Required']);
 				}
@@ -119,6 +122,7 @@ class Authservice extends CI_Controller
 				if($this->input->post('address')){
 					$this->general_model->insertServiceDetails($this->input->post('user'));
 					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['address' => $this->input->post('address')]);
+					retJson(['_return' => true,'msg' => 'Address saved.']);
 				}else{
 					retJson(['_return' => false,'msg' => '`address` is Required']);
 				}
@@ -128,6 +132,7 @@ class Authservice extends CI_Controller
 				if($this->input->post('emergency_contact')){
 					$this->general_model->insertServiceDetails($this->input->post('user'));
 					$this->db->where('user',$this->input->post('user'))->update('service_provider_details',['emergency_contact' => $this->input->post('emergency_contact')]);
+					retJson(['_return' => true,'msg' => 'Emergency Contact saved.']);
 				}else{
 					retJson(['_return' => false,'msg' => '`emergency_contact` is Required']);
 				}
