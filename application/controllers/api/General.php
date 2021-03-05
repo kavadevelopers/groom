@@ -22,11 +22,20 @@ class General extends CI_Controller
 			}else if($this->input->post('page') == "help"){
 				$page = $this->db->get_where('pages',['id' => '2'])->row_array();
 				retJson(['_return' => true,'page' => $page]);		
+			}else if($this->input->post('page') == "about_groom"){
+				$page = $this->db->get_where('pages',['id' => '3'])->row_array();
+				retJson(['_return' => true,'page' => $page]);		
+			}else if($this->input->post('page') == "sharing"){
+				$page = $this->db->get_where('pages',['id' => '4'])->row_array();
+				retJson(['_return' => true,'page' => $page]);		
+			}else if($this->input->post('page') == "datause"){
+				$page = $this->db->get_where('pages',['id' => '5'])->row_array();
+				retJson(['_return' => true,'page' => $page]);		
 			}else{
 				retJson(['_return' => false,'msg' => 'Please Enter Valid Page name']);		
 			}
 		}else{
-			retJson(['_return' => false,'msg' => '`page`(terms,help) is Required']);	
+			retJson(['_return' => false,'msg' => '`page`(terms,help,about_groom,sharing,datause) is Required']);	
 		}
 	}
 
