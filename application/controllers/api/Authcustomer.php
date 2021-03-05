@@ -116,7 +116,7 @@ class Authcustomer extends CI_Controller
 			    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profile_pic']['name'], PATHINFO_EXTENSION);
 			    	$this->upload->initialize($config);
 			    	if($this->upload->do_upload('profile_pic')){
-			    		$this->db->where('id',$this->input->post('userid'))->update([
+			    		$this->db->where('id',$this->input->post('userid'))->update('customer',[
 							'profile_pic'	=> $config['file_name']
 						]);
 			    	}
