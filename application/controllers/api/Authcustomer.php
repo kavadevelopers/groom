@@ -386,6 +386,22 @@ class Authcustomer extends CI_Controller
 				$old = $this->db->get_where('customer',['rtype' => 'email','email' => $this->input->post('email'),'df' => '']);
 				$oldp = $this->db->get_where('customer',['rtype' => 'email','phone' => $this->input->post('phone'),'ccode' => $this->input->post('ccode'),'df' => '']);
 				if($old->num_rows() == 0 && $oldp->num_rows() == 0){
+					$config['upload_path'] = './uploads/customer/';
+				    $config['allowed_types']	= '*';
+				    $config['max_size']      = '0';
+				    $config['overwrite']     = TRUE;
+				    $this->load->library('upload', $config);
+				    if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
+				    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
+				    	$this->upload->initialize($config);
+				    	if($this->upload->do_upload('profileimg')){
+				    		$profileFileName = $config['file_name'];
+				    	}else{
+				    		$profileFileName = "";
+				    	}
+				    }else{
+			    		$profileFileName = "";
+			    	}
 					$data = [
 						'rtype'		=> 'email',
 						'firstname'	=> $this->input->post('fname'),
@@ -394,6 +410,7 @@ class Authcustomer extends CI_Controller
 						'ccode'		=> $this->input->post('ccode'),
 						'phone'		=> $this->input->post('phone'),
 						'password'	=> md5($this->input->post('password')),
+						'profile_pic'	=> $profileFileName,
 						'verified'	=> '1',
 						'cat'		=> _nowDateTime()
 					];
@@ -403,7 +420,7 @@ class Authcustomer extends CI_Controller
 					retJson(['_return' => false,'msg' => 'Email Already Exists.']);
 				}
 			}else{
-				retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`phone`,`ccode` and `password` are Required']);	
+				retJson(['_return' => false,'msg' => '`fname`,`lname`,`email`,`phone`,`ccode` and `password` are Required,`profileimg` is Optional']);	
 			}	
 		}else if($this->input->post('type') && $this->input->post('type') == 'phone'){
 			if($this->input->post('phone') && $this->input->post('ccode')){
