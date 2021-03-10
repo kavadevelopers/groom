@@ -26,13 +26,24 @@ class Service_model extends CI_Model
 	    $customer['usertype']   			= "service";
 	    $customer['address']    			= $this->db->get_where('service_address',['user' => $id])->row_array();
 	    $customer['verified_profile']		= $this->is_verified($id);
+	    $customer['verified_professional']	= $this->is_verified_professional($id);
 	    $customer['other_details']			= $this->db->get_where('service_provider_details',['user' => $id])->row_array();
 	    return $customer;
 	}
 
 	public function is_verified($id)
 	{
-		$verified = $this->db->get_where('service_verified',['user' => $id,'status' => '1'])->row_array();
+		$verified = $this->db->get_where('service_verified',['user' => $id,'status' => '1','doctpye !=' => 'professional'])->row_array();
+		if($verified){
+			return "1";
+		}else{
+			return "0";
+		}
+	}
+
+	public function is_verified_professional($id)
+	{
+		$verified = $this->db->get_where('service_verified',['user' => $id,'status' => '1','doctpye' => 'professional'])->row_array();
 		if($verified){
 			return "1";
 		}else{

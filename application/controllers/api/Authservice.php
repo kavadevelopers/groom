@@ -295,7 +295,7 @@ class Authservice extends CI_Controller
 	    		retJson(['_return' => false,'msg' => 'File Upload Error']);		
 	    	}
 		}else{
-			retJson(['_return' => false,'msg' => '`user`,`doctype` and `doc` are Required']);
+			retJson(['_return' => false,'msg' => '`user`,`doctype`(professional) and `doc` are Required']);
 		}
 	}
 
@@ -576,12 +576,13 @@ class Authservice extends CI_Controller
 					retJson(['_return' => false,'msg' => '`phone` and `ccode` are Required']);	
 				}
 			}elseif ($this->input->post('type') == 'facebook' || $this->input->post('type') == 'google') {
-				if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id') && $this->input->post('ccode')){
+				if($this->input->post('type') && $this->input->post('fname') && $this->input->post('lname') && $this->input->post('email') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && $this->input->post('social_id') && $this->input->post('ccode')){
 					$old = $this->db->get_where('service_provider',['social_id' => $this->input->post('social_id'),'rtype' => $this->input->post('type'),'df' => ''])->row_array();
 					if(!$old){
 						$data = [
 							'rtype'			=> $this->input->post('type'),
 							'social_id'		=> $this->input->post('social_id'),
+							'email'			=> $this->input->post('email'),
 							'firstname'		=> $this->input->post('fname'),
 							'lastname'		=> $this->input->post('lname'),
 							'ccode'			=> $this->input->post('ccode'),
@@ -600,7 +601,7 @@ class Authservice extends CI_Controller
 						retJson(['_return' => false,'msg' => 'Already Registered']);	
 					}
 				}else{
-					retJson(['_return' => false,'msg' => '`social_id`,`fname`,`lname`,`business`,`phone`,`ccode`,`services` and `desc` are Required']);	
+					retJson(['_return' => false,'msg' => '`social_id`,`fname`,`lname`,`email`,`business`,`phone`,`ccode`,`services` and `desc` are Required']);	
 				}
 			}else{
 				retJson(['_return' => false,'msg' => '`type` not found']);	
