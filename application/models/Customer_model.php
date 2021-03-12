@@ -18,7 +18,11 @@ class Customer_model extends CI_Model
 	        }
 	    }else{
 	        if($customer['profile_pic'] != "" && $customer['profile_pic'] != NULL){
-	            $customer['profile_pic'] = base_url('uploads/customer/').$customer['profile_pic'];
+	            if(filter_var($customer['profile_pic'], FILTER_VALIDATE_URL)){
+	            	$customer['profile_pic'] = $customer['profile_pic'];
+	        	}else{
+	        		$customer['profile_pic'] = base_url('uploads/customer/').$customer['profile_pic'];
+	        	}
 	        }else{
 	            $customer['profile_pic'] = base_url('uploads/common/profile.png');
 	        }
