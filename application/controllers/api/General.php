@@ -91,13 +91,30 @@ class General extends CI_Controller
 					if($this->input->post('user') && $this->input->post('otp')){
 						$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'service','used' => '0'])->row_array();
 						if($otp){
-							if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc')){
+							if($this->input->post('fname') && $this->input->post('lname') && $this->input->post('business') && $this->input->post('phone') && $this->input->post('services') && $this->input->post('desc') && isset($_FILES ['profileimg'])){
+								$config['upload_path'] = './uploads/service/';
+							    $config['allowed_types']	= '*';
+							    $config['max_size']      = '0';
+							    $config['overwrite']     = TRUE;
+							    $this->load->library('upload', $config);
+							    if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
+							    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
+							    	$this->upload->initialize($config);
+							    	if($this->upload->do_upload('profileimg')){
+							    		$profileFileName = $config['file_name'];
+							    	}else{
+							    		$profileFileName = "";
+							    	}
+							    }else{
+						    		$profileFileName = "";
+						    	}
 								$data = [
 									'firstname'		=> $this->input->post('fname'),
 									'lastname'		=> $this->input->post('lname'),
 									'business'		=> $this->input->post('business'),
 									'services'		=> $this->input->post('services'),
 									'descr'			=> $this->input->post('desc'),
+									'profile_pic'	=> $profileFileName,
 									'verified'		=> '1',
 									'cat'			=> _nowDateTime()
 								];
@@ -105,7 +122,7 @@ class General extends CI_Controller
 								$this->db->where('user',$this->input->post('user'))->where('otptype','register_phone')->where('usertype','service')->update('z_otp',['used' => '1']);
 								retJson(['_return' => true,'msg' => 'Sign Up Successful.']);
 							}else{
-								retJson(['_return' => false,'msg' => '`fname`,`lname`,`business`,`phone`,`services` and `desc` are Required']);	
+								retJson(['_return' => false,'msg' => '`fname`,`lname`,`business`,`phone`,`services`,`profileimg` and `desc` are Required']);	
 							}
 						}else{
 							retJson(['_return' => false,'msg' => 'OTP Not Valid']);		
@@ -118,7 +135,19 @@ class General extends CI_Controller
 						$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'customer','used' => '0'])->row_array();
 						if($otp){
 							if($this->input->post('fname') && $this->input->post('lname')){
+								if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
+							    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
+							    	$this->upload->initialize($config);
+							    	if($this->upload->do_upload('profileimg')){
+							    		$profileFileName = $config['file_name'];
+							    	}else{
+							    		$profileFileName = "";
+							    	}
+							    }else{
+						    		$profileFileName = "";
+						    	}
 								$data = [
+									'profile_pic'	=> $profileFileName,
 									'firstname'	=> $this->input->post('fname'),
 									'lastname'	=> $this->input->post('lname'),
 									'verified'	=> '1',

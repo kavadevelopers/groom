@@ -544,28 +544,11 @@ class Authservice extends CI_Controller
 						if($old['verified'] == "1"){
 							retJson(['_return' => false,'msg' => 'Phone No. Already Exists']);	
 						}else{
-							$config['upload_path'] = './uploads/service/';
-						    $config['allowed_types']	= '*';
-						    $config['max_size']      = '0';
-						    $config['overwrite']     = TRUE;
-						    $this->load->library('upload', $config);
-						    if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
-						    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
-						    	$this->upload->initialize($config);
-						    	if($this->upload->do_upload('profileimg')){
-						    		$profileFileName = $config['file_name'];
-						    	}else{
-						    		$profileFileName = "";
-						    	}
-						    }else{
-					    		$profileFileName = "";
-					    	}
 							$data = [
 								'rtype'		=> 'phone',
 								'firstname'	=> "",
 								'lastname'	=> "",
 								'ccode'		=> $this->input->post('ccode'),
-								'profile_pic'	=> $profileFileName,
 								'phone'		=> $this->input->post('phone'),
 								'verified'	=> '0',
 								'cat'		=> _nowDateTime()
@@ -575,27 +558,10 @@ class Authservice extends CI_Controller
 							retJson(['_return' => true,'msg' => 'Please Verify OTP.','user' => $old['id'],'otp' => $otp]);
 						}
 					}else{
-						$config['upload_path'] = './uploads/service/';
-					    $config['allowed_types']	= '*';
-					    $config['max_size']      = '0';
-					    $config['overwrite']     = TRUE;
-					    $this->load->library('upload', $config);
-					    if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
-					    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
-					    	$this->upload->initialize($config);
-					    	if($this->upload->do_upload('profileimg')){
-					    		$profileFileName = $config['file_name'];
-					    	}else{
-					    		$profileFileName = "";
-					    	}
-					    }else{
-				    		$profileFileName = "";
-				    	}
 						$data = [
 							'rtype'		=> 'phone',
 							'firstname'	=> "",
 							'lastname'	=> "",
-							'profile_pic'	=> $profileFileName,
 							'ccode'		=> $this->input->post('ccode'),
 							'phone'		=> $this->input->post('phone'),
 							'verified'	=> '0',
