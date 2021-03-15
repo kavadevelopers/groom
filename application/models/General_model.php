@@ -20,6 +20,15 @@ class General_model extends CI_Model
 		return $this->db->get_where('setting',['id' => '1'])->row_array();
 	}
 
+	public function getShopId()
+	{
+		$last_id = $this->db->order_by('id','desc')->limit(1)->get('shop')->row_array();	
+		if($last_id){
+			$order_id = mt_rand(10000000, 99999999).($last_id['id'] + 1);
+		}else{
+			$order_id = mt_rand(10000000, 99999999).'1';
+		}
+	}
 
 	public function getCategoryThumb($category)
 	{
