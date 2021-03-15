@@ -24,9 +24,9 @@ class General_model extends CI_Model
 	{
 		$last_id = $this->db->order_by('id','desc')->limit(1)->get('shop')->row_array();	
 		if($last_id){
-			$order_id = mt_rand(10000000, 99999999).($last_id['id'] + 1);
+			return mt_rand(10000000, 99999999).($last_id['id'] + 1);
 		}else{
-			$order_id = mt_rand(10000000, 99999999).'1';
+			return mt_rand(10000000, 99999999).'1';
 		}
 	}
 
