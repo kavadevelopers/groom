@@ -135,6 +135,11 @@ class General extends CI_Controller
 						$otp = $this->db->get_where('z_otp',['user' => $this->input->post('user'),'otp' => $this->input->post('otp'),'otptype' => 'register_phone','usertype' => 'customer','used' => '0'])->row_array();
 						if($otp){
 							if($this->input->post('fname') && $this->input->post('lname')){
+								$config['upload_path'] = './uploads/service/';
+							    $config['allowed_types']	= '*';
+							    $config['max_size']      = '0';
+							    $config['overwrite']     = TRUE;
+							    $this->load->library('upload', $config);
 								if(isset($_FILES ['profileimg']) && $_FILES['profileimg']['error'] == 0){
 							    	$config['file_name'] = microtime(true).".".pathinfo($_FILES['profileimg']['name'], PATHINFO_EXTENSION);
 							    	$this->upload->initialize($config);
