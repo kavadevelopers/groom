@@ -6,6 +6,115 @@ class Shop extends CI_Controller
 		parent::__construct();
 	}
 
+	public function create_prod_serv()
+	{
+		if($this->input->post('user') && $this->input->post('shop') && $this->input->post('type')){	
+			if($this->input->post('type') == "service"){
+				if($this->input->post('title') && $this->input->post('desc') && $this->input->post('tag') && $this->input->post('duration') && $this->input->post('price') && $this->input->post('images')){
+					$data = [
+						'shop'		=> $this->input->post('shop'),
+						'user'		=> $this->input->post('user'),
+						'type'		=> 'service',
+						'category'	=> NULL,
+						'title'		=> $this->input->post('title'),
+						'descr'		=> $this->input->post('desc'),
+						'tag'		=> $this->input->post('tag'),
+						'duration'	=> $this->input->post('duration'),
+						'price'		=> $this->input->post('price'),
+						'brand'		=> NULL,
+						'size'		=> NULL,
+						'cat'		=> _nowDateTime()
+					];
+					$this->db->insert('shop_products',$data);
+					$productId = $this->db->insert_id();
+
+					foreach ($this->input->post('images') as $ikey => $ivalue) {
+						$img = $ivalue;
+						$img = str_replace('data:image/png;base64,', '', $img);
+						$img = str_replace(' ', '+', $img);
+						$data = base64_decode($img);
+						$file = microtime(true).'.png';
+						file_put_contents('./uploads/product/'.$file, $data);		
+						$img = [
+							'image'		=> $file,
+							'product'	=> $productId,
+							'user'		=> $this->input->post('user')
+						];
+						$this->db->insert('shop_product_image',$img);
+					}
+					retJson(['_return' => true,'msg' => 'Service Created']);
+				}else{
+					retJson(['_return' => false,'msg' => '`title`,`desc`,`tag`(if multiple add comma saperated),`duration`,`price` and `images` are Required']);		
+				}
+			}else if($this->input->post('type') == "product"){
+				if($this->input->post('title') && $this->input->post('desc') && $this->input->post('tag') && $this->input->post('price') && $this->input->post('images') && $this->input->post('category') && $this->input->post('brand') && $this->input->post('size')){
+
+					$data = [
+						'shop'		=> $this->input->post('shop'),
+						'user'		=> $this->input->post('user'),
+						'type'		=> 'product',
+						'category'	=> $this->input->post('category'),
+						'title'		=> $this->input->post('title'),
+						'descr'		=> $this->input->post('desc'),
+						'tag'		=> $this->input->post('tag'),
+						'duration'	=> NULL,
+						'price'		=> $this->input->post('price'),
+						'brand'		=> $this->input->post('brand'),
+						'size'		=> $this->input->post('size'),
+						'cat'		=> _nowDateTime()
+					];
+					$this->db->insert('shop_products',$data);
+					$productId = $this->db->insert_id();
+
+					foreach ($this->input->post('images') as $ikey => $ivalue) {
+						$img = $ivalue;
+						$img = str_replace('data:image/png;base64,', '', $img);
+						$img = str_replace(' ', '+', $img);
+						$data = base64_decode($img);
+						$file = microtime(true).'.png';
+						file_put_contents('./uploads/product/'.$file, $data);		
+						$img = [
+							'image'		=> $file,
+							'product'	=> $productId,
+							'user'		=> $this->input->post('user')
+						];
+						$this->db->insert('shop_product_image',$img);
+					}
+					retJson(['_return' => true,'msg' => 'Product Created']);
+
+				}else{
+					retJson(['_return' => false,'msg' => '`title`,`desc`,`tag`(if multiple add comma saperated),`price`,`category`,`brand`,`size` and `images` are Required']);		
+				}
+			}
+			else{
+				retJson(['_return' => false,'msg' => '`type` not found']);
+			}
+		}else{
+			retJson(['_return' => false,'msg' => '`user`,`type`(product,service) and `shop` are Required']);
+		}	
+	}
+
+	public function getshops()
+	{
+		if($this->input->post('user')){	
+			$this->db->where('user',$this->input->post('user'));
+			$this->db->where('df','');
+			$list = $this->db->get('shop')->result_array();
+
+			foreach ($list as $key => $value) {
+				$images = [];
+				foreach ($this->db->get_where('shop_images',['shop' => $value['id']])->result_array() as $Ikey => $Ivalue) {
+					array_push($images,['image' => base_url('uploads/shop/').$Ivalue['image']]);
+				}
+				$list[$key]['images'] = $images;
+			}
+
+			retJson(['_return' => true,'list' => $list]);
+		}else{
+			retJson(['_return' => false,'msg' => '`user` are Required']);
+		}
+	}
+
 	public function create()
 	{
 		if($this->input->post('user') && $this->input->post('type') && $this->input->post('address') && $this->input->post('lat') && $this->input->post('lon') && $this->input->post('shop_type')  && $this->input->post('services')  && $this->input->post('desc') && $this->input->post('images')){
@@ -20,6 +129,7 @@ class Shop extends CI_Controller
 				'shop_type'			=> $this->input->post('shop_type'),
 				'services'			=> $this->input->post('services'),
 				'descr'				=> $this->input->post('descr'),
+				'df'				=> '',
 				'cat'				=> _nowDateTime()
 			];
 			$this->db->insert('shop',$data);
