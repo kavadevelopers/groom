@@ -6,6 +6,51 @@ class Shop extends CI_Controller
 		parent::__construct();
 	}
 
+	public function get_prod_serv_single()
+	{
+		if($this->input->post('product')){	
+			$this->db->where('id',$this->input->post('product'));
+			$this->db->where('df','');
+			$data = $this->db->get('shop_products')->row_array();
+			$images = [];
+			foreach ($this->db->get_where('shop_product_image',['product' => $data['id']])->result_array() as $Ikey => $Ivalue) {
+				array_push($images,['image' => base_url('uploads/product/').$Ivalue['image']]);
+			}
+			$data['images'] = $images;
+
+			retJson(['_return' => true,'data' => $data]);
+		}else{
+			retJson(['_return' => false,'msg' => '`product` is Required']);
+		}
+	}
+
+	public function get_prod_serv()
+	{
+		if($this->input->post('shop')){	
+			if($this->input->post('start') !== null && $this->input->post('limit')){
+				$this->db->limit($this->input->post('limit'), $this->input->post('start'));
+			}
+			if($this->input->post('type')){
+				$this->db->where('type',$this->input->post('type'));	
+			}
+			$this->db->where('shop',$this->input->post('shop'));
+			$this->db->where('df','');
+			$list = $this->db->get('shop_products')->result_array();
+
+			foreach ($list as $key => $value) {
+				$images = [];
+				foreach ($this->db->get_where('shop_product_image',['product' => $value['id']])->result_array() as $Ikey => $Ivalue) {
+					array_push($images,['image' => base_url('uploads/product/').$Ivalue['image']]);
+				}
+				$list[$key]['images'] = $images;
+			}
+
+			retJson(['_return' => true,'list' => $list]);
+		}else{
+			retJson(['_return' => false,'msg' => '`shop` is Required,`type`(service,product),`start`,`limit` are optional']);
+		}
+	}
+
 	public function create_prod_serv()
 	{
 		if($this->input->post('user') && $this->input->post('shop') && $this->input->post('type')){	
@@ -92,6 +137,22 @@ class Shop extends CI_Controller
 		}else{
 			retJson(['_return' => false,'msg' => '`user`,`type`(product,service) and `shop` are Required']);
 		}	
+	}
+
+	public function getshop()
+	{
+		if($this->input->post('shop')){	
+			$this->db->where('id',$this->input->post('shop'));
+			$data = $this->db->get('shop')->row_array();
+			$images = [];
+			foreach ($this->db->get_where('shop_images',['shop' => $data['id']])->result_array() as $Ikey => $Ivalue) {
+				array_push($images,['image' => base_url('uploads/shop/').$Ivalue['image']]);
+			}
+			$data['images'] = $images;
+			retJson(['_return' => true,'data' => $data]);
+		}else{
+			retJson(['_return' => false,'msg' => '`shop` are Required']);
+		}
 	}
 
 	public function getshops()
